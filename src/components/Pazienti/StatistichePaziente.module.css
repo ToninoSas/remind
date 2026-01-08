@@ -15,7 +15,7 @@
 }
 
 .wrapper_statistiche{
-    border: 2px solid #163172;
+    /* border: 2px solid #163172; */
     border-radius: 10px;
     background-image: linear-gradient(#b1d9fc, #dfe7ee);
     padding: 20px;
@@ -23,7 +23,7 @@
     margin: 15px;
     display: flex;
     flex-direction: column;
-    box-shadow: 2px 4px 10px 1px#163172;
+    /* box-shadow: 2px 4px 10px 1px#163172; */
 }
 
 .select_style{

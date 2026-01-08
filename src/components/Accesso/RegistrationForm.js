@@ -160,7 +160,7 @@ function RegistrationForm(props){
             <label className={styles.label_box}>Titolo</label>
       
             <p className={styles.dropdown_box}>
-              Caregiver
+              Ttolo: Caregiver
               <span className={styles.tooltip}>
                 <i className="fa fa-info-circle"></i> 
                 <span className={styles.tooltipText}>Il caregiver è colui che si occupa del paziente</span>

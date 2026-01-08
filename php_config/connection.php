@@ -197,9 +197,9 @@
     
     function getConnection() {
 		$servername = "localhost";
-        $username = "DvdLocalhost";
-        $password = "Davide99@";
-        $database = "cognicare";
+        $username = "root";
+        $password = "";
+        $database = "remind";
         
         $o_conn = new mysqli($servername, $username, $password, $database);
         if ($o_conn -> connect_errno) {
@@ -1291,14 +1291,19 @@ function updatePatientWithProfileID($i_conn) {
         $updatePatient->execute();
     
         
-        $updateAccount = $i_conn->prepare(
-            "UPDATE `accounts` SET 
-                `email` = ? 
-            WHERE `accounts`.`UID` = ?"
-        );
-        $updateAccount->bind_param("si", $contattoEmail, $ID); 
-        $updateAccount->execute();
-        $updateAccount->close();
+        // Only update the accounts.email when a non-empty email is provided.
+        // Avoid updating to an empty string which can violate UNIQUE(email).
+        $trimmedEmail = is_string($contattoEmail) ? trim($contattoEmail) : '';
+        if ($trimmedEmail !== '') {
+            $updateAccount = $i_conn->prepare(
+                "UPDATE `accounts` SET `email` = ? WHERE `accounts`.`UID` = ?"
+            );
+            $updateAccount->bind_param("si", $trimmedEmail, $ID);
+            $updateAccount->execute();
+            $updateAccount->close();
+        } else {
+            error_log("Skipping accounts.email update because contattoEmail is empty for patient ID: " . $ID);
+        }
 
        
         $deleteOldGames = $i_conn->prepare(
@@ -1712,7 +1717,7 @@ WHERE patients.ID = ?
         }
         
         // $result = $gamePatientsList->get_result();
-        return $result;
+        // return $result;
     }
 
     function generateRandomString() {
@@ -1883,9 +1888,12 @@ WHERE patients.ID = ?
     }
 
     function addBridgeQuestions($i_conn){
+        
     	$data = file_get_contents("php://input");
         $dataJson = json_decode($data, true);
         
+        print_r($dataJson);
+
         $gameID = $dataJson["gameID"];
         $domande = $dataJson["domande"];
 

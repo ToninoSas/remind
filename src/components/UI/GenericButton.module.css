@@ -7,8 +7,8 @@
     height: 40px;
     font-size: 18px;
     font-weight: bold;
-    border: 2px solid #232931; 
-    border-radius: 20px;
+    /* border: 2px solid #232931;  */
+    border-radius: 10px;
     color: #232931; 
     cursor: pointer;
     transition: 0.3s;
@@ -52,7 +52,7 @@
     font-size: 15px;
     font-weight: bold;
     border: 2px solid #232931; 
-    border-radius: 20px;
+    border-radius: 10px;
     color: #232931;
     cursor: pointer;
     background-color: #5FD1AC; 

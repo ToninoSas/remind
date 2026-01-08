@@ -20,7 +20,7 @@ function AssignGameToPatient(props){
         setPatientSearched(event.target.value);
     }
 
-    function verifyGameOnPatients(paziente){
+    function verifyGameOnPatients(paziente, index){
         let checkboxInputChecked;
 
         if(game_ctx.listaPazientiPerGioco.length <= 0){
@@ -44,7 +44,7 @@ function AssignGameToPatient(props){
 
         if(paziente.nome.toUpperCase().includes(patientSearched.toUpperCase()) || paziente.cognome.toUpperCase().includes(patientSearched.toUpperCase())){
             return (
-                <ListGroup.Item action className={styles.list_item}>
+                <ListGroup.Item action className={styles.list_item} key={index}>
                     <div className={styles.wrapper_content}>
                         <div className={styles.wrapper_flexible}>
                             <p className={styles.card_content_FULLNAME}>{paziente.nome} {paziente.cognome}</p>
@@ -90,7 +90,9 @@ function AssignGameToPatient(props){
             
             <div className={styles.scrollable_list}>
                 <ListGroup className={styles.list_group}>
-                    {patients_ctx.listaPazienti.map(verifyGameOnPatients)}
+                    {patients_ctx.listaPazienti.map((value, index) =>{
+                        return verifyGameOnPatients(value, index);
+                    })}
                 </ListGroup>
             </div>
 

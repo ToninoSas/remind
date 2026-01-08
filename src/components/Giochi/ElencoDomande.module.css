@@ -1,17 +1,17 @@
 .LIST_ITEM_STYLE{
     margin: 12px;
     border: 2px solid #163172;
-    border-radius: 5px;
+    border-radius: 10px;
     background-color: white;
     width: 93%;
     height: fit-content;
     transition: 0.5s;
-    box-shadow: 2px 2px 2px 1px rgb(33, 33, 131);
+    /* box-shadow: 2px 2px 2px 1px rgb(33, 33, 131); */
 }
 .LIST_ITEM_STYLE:hover{
     background-color: #ececec;
     /* cursor: pointer; */
-    box-shadow: 0 1px 10px 1px rgb(33, 33, 131);
+    /* box-shadow: 0 1px 10px 1px rgb(33, 33, 131); */
 }
 
 .wrapper_generico{

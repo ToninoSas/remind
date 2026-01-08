@@ -95,152 +95,164 @@ function ElencoDomande(props){
         
     
 
-    function recuperaTutteLeDomande(singleQuestion){
-        var checkboxInputChecked;
-        
-        console.log(singleQuestion.tipoGioco === props.tipoGioco);
+    function recuperaTutteLeDomande(singleQuestion) {
+      // Verifichiamo se l'ID della domanda è presente nell'elenco delle selezionate
+      // Questo restituisce sempre true o false, evitando il passaggio undefined -> defined
+      const isChecked = llll.includes(singleQuestion.ID);
 
-        if(singleQuestion.tipoGioco === props.tipoGioco){
-            domande_esistenti += 1;
-            // console.log("AOOOO")
-        }
+      if (singleQuestion.tipoGioco === props.tipoGioco) {
+        domande_esistenti += 1;
 
-        if(singleQuestion.tipoGioco === props.tipoGioco){
-            if(llll.length <= 0){
-                checkboxInputChecked =
-                    <input className={styles.checkbox_style} type="checkbox" onChange={(event)=>{
-                        verifyIsChecked(event, singleQuestion)
-                        }}
-                    >
-                    </input>
-            }
-            else{
-                for(var i=0; i < llll.length; i++){
-                    if(singleQuestion.ID === llll[i]){
-                        checkboxInputChecked =
-                            <input checked className={styles.checkbox_style} type="checkbox" onChange={(event)=>{
-                                verifyIsChecked(event, singleQuestion)
-                                }}
-                            >
-                            </input>
-                        break;
-                    }
-                    else{
-                        checkboxInputChecked =
-                            <input className={styles.checkbox_style} type="checkbox" onChange={(event)=>{
-                                verifyIsChecked(event, singleQuestion)
-                                }}
-                            >
-                            </input>
-                    }
-                }
-            }
+        // Definiamo l'input in modo che sia SEMPRE controllato
+        const checkboxInputChecked = (
+          <input
+            className={styles.checkbox_style}
+            type="checkbox"
+            checked={isChecked} // Prop sempre presente
+            onChange={(event) => {
+              verifyIsChecked(event, singleQuestion);
+            }}
+          />
+        );
 
-            return(
-                <li className={styles.LIST_ITEM_STYLE}>
+        return (
+          <li className={styles.LIST_ITEM_STYLE} key={singleQuestion.ID}>
+            {props.tipoGioco === "QUIZ" && (
+              <div className={styles.flex_list_container}>
+                <h5 className={styles.subtitle_style}>Domanda:</h5>
+                <p className={styles.question_style}>
+                  {singleQuestion.domanda}
+                </p>
+              </div>
+            )}
 
-                    {props.tipoGioco === "QUIZ" &&
-                        <div className={styles.flex_list_container}>
-                            <h5 className={styles.subtitle_style}>Domanda:</h5>
-                            <p className={styles.question_style}>{singleQuestion.domanda}</p>
-                        </div>
-                    }
+            {props.tipoGioco === "QUIZ CON IMMAGINI" && (
+              <div className={styles.flex_list_container}>
+                <h5 className={styles.subtitle_style}>Immagine:</h5>
+                <img
+                  className={styles.preview_image}
+                  src={websiteUrl.concat(singleQuestion.immagine)}
+                  alt="anteprima"
+                />
+                <h4 className={styles.subtitle_style}>Domanda:</h4>
+                <p className={styles.question_style}>
+                  {singleQuestion.domanda}
+                </p>
+              </div>
+            )}
 
-                    {props.tipoGioco === "QUIZ CON IMMAGINI" &&
-                        <div className={styles.flex_list_container}>
-                            <h5 className={styles.subtitle_style}>Immagine:</h5>
-                            <img className={styles.preview_image} src={websiteUrl.concat(singleQuestion.immagine)}></img>
-                            <h4 className={styles.subtitle_style}>Domanda:</h4>
-                            <p className={styles.question_style}>{singleQuestion.domanda}</p>
-                        </div>
-                    }
-                    {props.tipoGioco === "QUIZ CON SUONI" &&
-                        <div className={styles.flex_list_container}>
-                            <h5 className={styles.subtitle_style}>Audio:</h5>
-                            <audio controls={true} src={websiteUrl.concat(singleQuestion.immagine)}></audio>
-                            <h4 className={styles.subtitle_style}>Domanda:</h4>
-                            <p className={styles.question_style}>{singleQuestion.domanda}</p>
-                        </div>
-                    }
+            {props.tipoGioco === "QUIZ CON SUONI" && (
+              <div className={styles.flex_list_container}>
+                <h5 className={styles.subtitle_style}>Audio:</h5>
+                <audio
+                  controls={true}
+                  src={websiteUrl.concat(singleQuestion.immagine)}
+                ></audio>
+                <h4 className={styles.subtitle_style}>Domanda:</h4>
+                <p className={styles.question_style}>
+                  {singleQuestion.domanda}
+                </p>
+              </div>
+            )}
 
+            {props.tipoGioco === "QUIZ CON VIDEO" && (
+              <div className={styles.flex_list_container}>
+                <h5 className={styles.subtitle_style}>Video:</h5>
+                <video controls width="320" height="240">
+                  <source
+                    src={websiteUrl.concat(singleQuestion.immagine)}
+                    type="video/mp4"
+                  />
+                </video>
+                <h4 className={styles.subtitle_style}>Domanda:</h4>
+                <p className={styles.question_style}>
+                  {singleQuestion.domanda}
+                </p>
+              </div>
+            )}
 
-{props.tipoGioco === "QUIZ CON VIDEO" &&
-    <div className={styles.flex_list_container}>
-        <h5 className={styles.subtitle_style}>Video:</h5>
-        <video controls width="320" height="240">
-            <source src={websiteUrl.concat(singleQuestion.immagine)} type="video/mp4" />
-            Your browser does not support the video element.
-        </video>
-        <h4 className={styles.subtitle_style}>Domanda:</h4>
-        <p className={styles.question_style}>{singleQuestion.domanda}</p>
-    </div>
-}
+            {props.tipoGioco === "COMPLETA LA PAROLA" && (
+              <>
+                <div className={styles.flex_list_container}>
+                  <h5 className={styles.subtitle_style}>
+                    Parola da indovinare:
+                  </h5>
+                  <p className={styles.question_style}>
+                    {singleQuestion.domanda}
+                  </p>
+                </div>
+                <div className={styles.flex_list_container}>
+                  <h4 className={styles.subtitle_style}>Aiuto:</h4>
+                  <p className={styles.question_style}>
+                    {singleQuestion.suggerimento}
+                  </p>
+                </div>
+              </>
+            )}
 
+            {(props.tipoGioco === "QUIZ" ||
+              props.tipoGioco === "QUIZ CON IMMAGINI" ||
+              props.tipoGioco === "QUIZ CON SUONI" ||
+              props.tipoGioco === "QUIZ CON VIDEO") && (
+              <div className={styles.flex_list_container}>
+                <h5 className={styles.subtitle_style}>Risposte:</h5>
+                <div className={styles.separa_corrette_sbagliate}>
+                  <span className={styles.buttons_space}>
+                    <p style={{ marginBottom: "0" }}>CORRETTA</p>
+                    <p className={styles.correct_answ}>
+                      {singleQuestion.rispCorrettaN1}
+                    </p>
+                    {singleQuestion.rispCorrettaN2?.trim().length > 0 && (
+                      <p className={styles.correct_answ}>
+                        {singleQuestion.rispCorrettaN2}
+                      </p>
+                    )}
+                    {singleQuestion.rispCorrettaN3?.trim().length > 0 && (
+                      <p className={styles.correct_answ}>
+                        {singleQuestion.rispCorrettaN3}
+                      </p>
+                    )}
+                    {singleQuestion.rispCorrettaN4?.trim().length > 0 && (
+                      <p className={styles.correct_answ}>
+                        {singleQuestion.rispCorrettaN4}
+                      </p>
+                    )}
+                  </span>
 
-                    {props.tipoGioco === "COMPLETA LA PAROLA" &&
-                    <>
-                        <div className={styles.flex_list_container}>
-                            <h5 className={styles.subtitle_style}>Parola da indovinare:</h5>
-                            <p className={styles.question_style}>{singleQuestion.domanda}</p>
-                        </div>
-                        <div className={styles.flex_list_container}>
-                            <h4 className={styles.subtitle_style}>Aiuto:</h4>
-                            <p className={styles.question_style}>{singleQuestion.suggerimento}</p>
-                            {console.log("stampo il suggerimento",singleQuestion.suggerimento)}
-                        </div>
-                    </>
-                    }
+                  <span className={styles.buttons_space}>
+                    <p style={{ marginBottom: "0" }}>SBAGLIATE</p>
+                    <p className={styles.wrong_answ}>
+                      {singleQuestion.rispSbagliataN1}
+                    </p>
+                    {singleQuestion.rispSbagliataN2?.trim().length > 0 && (
+                      <p className={styles.wrong_answ}>
+                        {singleQuestion.rispSbagliataN2}
+                      </p>
+                    )}
+                    {singleQuestion.rispSbagliataN3?.trim().length > 0 && (
+                      <p className={styles.wrong_answ}>
+                        {singleQuestion.rispSbagliataN3}
+                      </p>
+                    )}
+                    {singleQuestion.rispSbagliataN4?.trim().length > 0 && (
+                      <p className={styles.wrong_answ}>
+                        {singleQuestion.rispSbagliataN4}
+                      </p>
+                    )}
+                  </span>
+                </div>
+              </div>
+            )}
 
-{(props.tipoGioco === "QUIZ" || props.tipoGioco === "QUIZ CON IMMAGINI" || props.tipoGioco === "QUIZ CON SUONI" || props.tipoGioco === "QUIZ CON VIDEO") && (
-    <div className={styles.flex_list_container}>
-        <h5 className={styles.subtitle_style}>Risposte:</h5>
-
-        <div className={styles.separa_corrette_sbagliate}>
-            <span className={styles.buttons_space}>
-                <p style={{ marginBottom: "0" }}>CORRETTA</p>
-                <p className={styles.correct_answ}>{singleQuestion.rispCorrettaN1}</p>
-
-                {singleQuestion.rispCorrettaN2 && singleQuestion.rispCorrettaN2.trim().length > 0 && (
-                    <p className={styles.correct_answ}>{singleQuestion.rispCorrettaN2.toString()}</p>
-                )}
-                {singleQuestion.rispCorrettaN3 && singleQuestion.rispCorrettaN3.trim().length > 0 && (
-                    <p className={styles.correct_answ}>{singleQuestion.rispCorrettaN3.toString()}</p>
-                )}
-                {singleQuestion.rispCorrettaN4 && singleQuestion.rispCorrettaN4.trim().length > 0 && (
-                    <p className={styles.correct_answ}>{singleQuestion.rispCorrettaN4.toString()}</p>
-                )}
-            </span>
-
-            <span className={styles.buttons_space}>
-                <p style={{ marginBottom: "0" }}>SBAGLIATE</p>
-                <p className={styles.wrong_answ}>{singleQuestion.rispSbagliataN1}</p>
-
-                {singleQuestion.rispSbagliataN2 && singleQuestion.rispSbagliataN2.trim().length > 0 && (
-                    <p className={styles.wrong_answ}>{singleQuestion.rispSbagliataN2.toString()}</p>
-                )}
-                {singleQuestion.rispSbagliataN3 && singleQuestion.rispSbagliataN3.trim().length > 0 && (
-                    <p className={styles.wrong_answ}>{singleQuestion.rispSbagliataN3.toString()}</p>
-                )}
-                {singleQuestion.rispSbagliataN4 && singleQuestion.rispSbagliataN4.trim().length > 0 && (
-                    <p className={styles.wrong_answ}>{singleQuestion.rispSbagliataN4.toString()}</p>
-                )}
-            </span>
-        </div>
-    </div>
-)}
-
-
-                    <div className={styles.flex_list_container}>
-                        <h5 className={styles.subtitle_style}>Inserisci nel quiz:</h5>
-                        {checkboxInputChecked}
-                    </div>
-
-                </li>
-            );
-        }
-        else{
-            return null;
-        }
+            <div className={styles.flex_list_container}>
+              <h5 className={styles.subtitle_style}>Inserisci nel quiz:</h5>
+              {checkboxInputChecked}
+            </div>
+          </li>
+        );
+      } else {
+        return null;
+      }
     }
 
     return (

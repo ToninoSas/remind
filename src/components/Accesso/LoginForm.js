@@ -75,7 +75,7 @@ function LoginForm(props) {
 
                
 
-                if (user.titolo === 3) {
+                if (user.titolo === 2) {
                     navigate(`/giochi/${user.UID}`);
                 } else {
                     navigate(`/pazienti/${user.UID}`);

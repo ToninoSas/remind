@@ -111,8 +111,8 @@ export function GameContextProvider(props){
             .catch((err) => {
                 console.error(err)
             });
-console.log("stampa giochi ",resultGames);
-if (resultGames && resultGames.length > 0 && resultGames[0] !== null && resultGames[0] !== undefined) {
+            console.log("stampa giochi ",resultGames);
+            if (resultGames && resultGames.length > 0 && resultGames[0] !== null && resultGames[0] !== undefined) {
                 console.log(resultGames[0].creatorID)
                 creatoreDomandaID = resultGames[0].creatorID;
             }

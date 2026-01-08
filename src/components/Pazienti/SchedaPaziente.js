@@ -148,16 +148,16 @@ console.log("stampo le props",props);
                                 <div className={styles.content_text_style}>{props.codicefiscale}</div>
                             </div>
                             <div className={styles.horizontal}>
-                                <label className={styles.label_style}>CREDENZIALI:</label>
+                                {/* <label className={styles.label_style}>CREDENZIALI:</label> */}
                                 {credentials !== null && credentials.length === 0 && (
                                     <>
-                                        <div className={styles.content_text_style}>
+                                        {/* <div className={styles.content_text_style}>
                                             <GenericButton
                                                 onClick={() => setCreateCredentials((prevBool) => !prevBool)}
                                                 buttonText="Crea credenziali"
                                                 generic_button
                                             />
-                                        </div>
+                                        </div> */}
                                         {createCredentials && (
                                             <Modal centered show={createCredentials}>
                                                 <Modal.Header style={{ fontWeight: "bold", fontSize: "18px" }}>Crea credenziali paziente</Modal.Header>

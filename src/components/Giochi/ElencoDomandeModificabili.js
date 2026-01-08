@@ -105,7 +105,7 @@ function ElencoDomandeModificabili(props) {
                                     <p className={styles.correct_answ}>{singleQuestion.rispCorrettaN4.toString()}</p>
                                 )}
                             </span>
-
+                            
                             <span className={styles.buttons_space}>
                                 <p style={{ margin: "0" }}>SBAGLIATE</p>
                                 {singleQuestion.rispSbagliataN1 && singleQuestion.rispSbagliataN1.trim().length > 0 && (
@@ -153,34 +153,42 @@ function ElencoDomandeModificabili(props) {
     }
 
     return (
-        <>
-            {game_ctx.showModale && game_ctx.modale}
+      <>
+        {game_ctx.showModale && game_ctx.modale}
 
-            <div className={styles.wrap_flex_generico}>
-                <div className={styles.vertical}>
-                    <label className={styles.label_style}>Tipo gioco</label>
-                    <select className={styles.select_style} defaultValue={gameType} onChange={gameTypeChangeHandler}>
-                        <option>QUIZ</option>
-                        <option>QUIZ CON IMMAGINI</option>
-                        <option>QUIZ CON SUONI</option>
-                        <option>QUIZ CON VIDEO</option>
-                        <option>COMPLETA LA PAROLA</option>
-                    </select>
-                </div>
-            </div>
+        <div className={styles.wrap_flex_generico}>
+          <div>
+            <label className={styles.label_style}>Tipo gioco</label>
+            <select
+              className={styles.select_style}
+              defaultValue={gameType}
+              onChange={gameTypeChangeHandler}
+            >
+              <option>QUIZ</option>
+              <option>QUIZ CON IMMAGINI</option>
+              <option>QUIZ CON SUONI</option>
+              <option>QUIZ CON VIDEO</option>
+              <option>COMPLETA LA PAROLA</option>
+            </select>
+          </div>
+        </div>
 
-            <hr style={{ width: "100%" }} />
+        <hr style={{ width: "100%" }} />
 
-            {!domande_esistenti && <h2 style={{ textAlign: "center" }}>Non hai creato domande per questo tipo di gioco</h2>}
+        {!domande_esistenti && (
+          <h2 style={{ textAlign: "center" }}>
+            Non hai creato domande per questo tipo di gioco
+          </h2>
+        )}
 
-            {game_ctx.domande?.length > 0 &&
-                <ul className={styles.wrapper_lista_domande}>
-                    {console.log(game_ctx.domande)}
+        {game_ctx.domande?.length > 0 && (
+          <ul className={styles.wrapper_lista_domande}>
+            {console.log(game_ctx.domande)}
 
-                    {game_ctx.domande.map(recuperaTutteLeDomande)}
-                </ul>
-            }
-        </>
+            {game_ctx.domande.map(recuperaTutteLeDomande)}
+          </ul>
+        )}
+      </>
     );
 }
 

@@ -221,7 +221,7 @@ const[atLeast1WrongAnswer,setAtLeast1WrongAnswer]=useState(true);
     
 
     function uploadFile() {
-        const url = "http://localhost:3000/connection.php";
+        const url = "http://localhost/Remind/php_config/connection.php";
         const data = new FormData();
         data.append("file", myFile);
         axios.post(url, data).then(response => setMsg(response.data)).catch(error => setMsg(error));

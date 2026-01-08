@@ -1,8 +1,10 @@
 .title{
-    margin-top: 0;
-    margin-bottom: 10px;
+    /* margin-top: 0;
+    margin-bottom: 10px; */
     width: 100%;
     text-align: center;
+    margin: 15px;
+    padding: 5px;
 }
 
 .wrapper_flexible{
@@ -12,7 +14,7 @@
 }
 
 .scrollable_list{
-    overflow-y: auto;
+    /* overflow-y: auto; */
     height: 800px;
 }
 

@@ -8,15 +8,15 @@
     border-radius: 10px;
     margin: 15px;
     margin-left: 5px;
-    padding: 5px;
-    box-shadow: 0 1px 5px 1px rgb(33, 33, 131);
+    padding: 10px;
+    /* box-shadow: 0 1px 5px 1px rgb(33, 33, 131); */
     transition: 0.2s;
     animation: animazione 1.5s normal;
 }
 
 .item_gioco:hover{
     background-color: #D6E4F0;
-    box-shadow: 0 1px 15px 1px rgb(33, 33, 131);
+    /* box-shadow: 0 1px 15px 1px rgb(33, 33, 131); */
     transition: 0.2s;
 }
 

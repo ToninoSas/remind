@@ -41,10 +41,10 @@ export function AuthContextProvider(props) {
         setCognomeUtente(cognome);
         setPazienteLoggatoID(pazienteID);
         switch (tipoAccount) {
-            case 1:
+            case "1":
                 setTipoAccount("Caregiver");
                 break;
-            case 2:
+            case "2":
                 setTipoAccount("Paziente");
                 break;
             default:
@@ -66,11 +66,13 @@ export function AuthContextProvider(props) {
               setCognomeUtente(result.cognome);
               setPazienteLoggatoID(result.patientID);
               
+                console.log("paziente id: " + result.patientID);
+
               switch (result.titolo) {
-                  case 1:
+                  case "1":
                       setTipoAccount("Caregiver");
                       break;
-                  case 2:
+                  case "2":
                       setTipoAccount("Paziente");
                       break;
                   default:
