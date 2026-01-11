@@ -1,301 +1,210 @@
-.vertical{
+.main_container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Filtro */
+.filter_section {
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    align-items: center;
+    margin-bottom: 20px;
 }
 
-.wrapper_lista_domande{
-    /* overflow-y: scroll; */
+.input_group {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    width: 98%;
-    height: fit-content;
-    max-height: 700px;
-    /* background-color: #D6E4F0; */
-    /* border: 1px solid #163172; */
-    border-radius: 4px;
-    padding: 0px;
-    margin: 3px;
-    margin-top: 10px;
-    list-style-type: none;
-    
+    width: 100%;
+    max-width: 400px;
 }
 
-.wrapper_lista_domande::-webkit-scrollbar{
-    width: 8px;
+.label_style {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #163172;
 }
 
-.LIST_ITEM_STYLE{
-    margin: 15px 2px;
-    border: 2px solid #163172;
-    border-radius: 10px;
-    background-color: white;
-    width: 80%;
+.select_style {
     padding: 10px;
-    height: fit-content;
-    /* box-shadow: 1px 1px 5px 1px rgb(33, 33, 131); */
-    transition: 0.3s;
-}
-.LIST_ITEM_STYLE:hover{
-    background-color: #D6E4F0;
-    /* cursor: pointer; */
-    /* box-shadow: 0 1px 10px 1px rgb(33, 33, 131); */
+    border-radius: 8px;
+    border: 2px solid #1e56a0;
+    font-size: 16px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.label_style{
-    font-weight: bold;
-    width: 100%;
+.select_style:focus {
+    outline: none;
+    border-color: #163172;
+    box-shadow: 0 0 0 3px rgba(30, 86, 160, 0.2);
 }
 
-.subtitle_style{
-    font-size: 22px;
-    margin: 0;
-    margin-left: 5px;
-    margin-right: 10px;
+.divider {
+    border: 0;
+    height: 1px;
+    background: #d6e4f0;
+    margin: 20px 0;
 }
 
-.wrapper_generico{
-    display: flex;
-    width: 1000px;
-    /* flex-direction: column; */
-    justify-content: space-around;
-    align-items: center;
+/* Griglia e Cards */
+.questions_grid {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    max-height: 75vh;
+    overflow-y: auto;
+    padding-right: 10px;
 }
 
-.wrap_flex_generico{
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+/* Scrollbar personalizzata */
+.questions_grid::-webkit-scrollbar {
+    width: 6px;
 }
 
-.flex_list_container{
-    display: flex;
-    align-items: center;
-    height: auto;
-    border-bottom: 2px solid #163172;
-    margin: 1px;
+.questions_grid::-webkit-scrollbar-thumb {
+    background: #1e56a0;
+    border-radius: 10px;
 }
 
-
-video{
-    max-width: 250px;
-}
-
-
-
-.flex_list_container:last-child{
-    border-bottom: none;
-}
-
-.preview_image{
-    width: 50px;
-    height: 40px;
-}
-
-.domande_disponibili{
-    font-size: 15px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-}
-
-.separa_corrette_sbagliate{
-    width: 100%;
+.question_card {
+    background: white;
+    border: 1px solid #d6e4f0;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
-    /* justify-content: space-evenly; */
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-.question_style{
-    width: 100%;
-    text-align: center;
+.question_card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card_header {
+    padding: 15px;
+    background-color: #f8fbff;
+    border-bottom: 1px solid #d6e4f0;
+    position: relative;
+}
+
+.badge_id {
+    font-size: 10px;
+    color: #1e56a0;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.question_text {
     font-size: 18px;
-    margin: 8px;
+    font-weight: 600;
+    color: #163172;
+    margin: 0;
 }
 
-.buttons_space{
-    width: 100%;
+.card_body {
+    padding: 15px;
+    flex-grow: 1;
     display: flex;
-    align-items: center;
-    margin: 6px;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Media handling */
+.preview_media {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.video_player {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.audio_player {
+    width: 100%;
+}
+
+/* Risposte */
+.answers_container {
+    display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 
-.option_buttons{
-    width: 100%;
+.answer_group label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #666;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.chips_wrapper {
     display: flex;
-    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 5px;
 }
 
-.correct_answ{
-    font-size: 14px;
-    margin: 5px;
-    padding: 5px 5px;
-    /* border: 1px solid black; */
-    border-radius: 15px;
-    background-color: green;
+.chip_correct,
+.chip_wrong {
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 20px;
     color: white;
-    text-align: center;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    /* width: 100%; */
-    min-width: 20%;
 }
 
-.wrong_answ{
+.chip_correct {
+    background-color: #28a745;
+}
+
+.chip_wrong {
+    background-color: #dc3545;
+}
+
+.hint_box {
+    background: #fff9c4;
+    padding: 10px;
+    border-radius: 6px;
     font-size: 14px;
-    margin: 5px;
-    padding: 5px 5px;
-    /* border: 1px solid black; */
-    border-radius: 15px;
-    background-color: red;
-    color: white;
+}
+
+/* Azioni */
+.card_actions {
+    padding: 15px;
+    background: #f8fbff;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    border-top: 1px solid #d6e4f0;
+}
+
+.no_data {
     text-align: center;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    /* width: 100%; */
-    min-width: 20%;
+    padding: 50px;
+    color: #666;
 }
 
-.checkbox_style{
-    margin-top: 5px;
-    transform: scale(1.3);
-}
-
-.select_style{
-    padding: 0;
-    margin: 5px;
-    width: 100%;
-    height: 25px;
-    border-radius: 5px;
-    border: 2px solid #1E56A0;
-    font-size: 15px;
-    text-align: center;
-}
-
-.select_style:focus{
-    border: 2px solid #163172;
-    background-color: #D6E4F0;
-    outline: none;
-}
-
-@media screen and (max-width: 1550px) {
-    .wrapper_lista_domande{
-        /* width: 1000px; */
-        max-height: 560px;
+/* Responsive */
+@media (max-width: 600px) {
+    .questions_grid {
+        grid-template-columns: 1fr;
     }
 
-    .subtitle_style{
-        font-size: 15px;
-    }
-
-    .questions_style{
-        font-size: 15px;
-    }
-
-    .select_style{
-        /* width: 250px; */
-        height: 25px;
-    }
-
-    .correct_answ{
-        font-size: 13px;
-        margin: 2px;
-    }
-
-    .wrong_answ{
-        font-size: 13px;
-        margin: 2px;
-    }
-}
-
-@media screen and (max-width: 1300px) {
-    .wrapper_lista_domande{
-        /* width: 920px; */
-        max-height: 560px;
-    }
-}
-
-@media screen and (max-width: 1000px) {
-    .wrapper_lista_domande{
-        /* width: 800px; */
-        max-height: 560px;
-    }
-
-    .correct_answ{
-        /* width: 50px; */
-    }
-
-    .wrong_answ{
-        /* width: 50px; */
-    }
-}
-
-@media screen and (max-width: 850px) {
-    .flex_list_container{
+    .card_actions {
         flex-direction: column;
     }
 
-    .wrap_flex_generico{
-        /* width: 320px; */
-        /* justify-content: none; */
-    }
-
-    .buttons_space{
-        width: 99%;
-        margin: 4px;
-    }
-
-    .separa_corrette_sbagliate{
-        flex-direction: column;
-    }
-
-    .select_style{
-        /* width: 160px; */
-    }
-
-    .wrapper_lista_domande{
-        /* width: 600px; */
-        max-height: 560px;
-    }
-
-    .correct_answ{
-        /* width: 50px; */
-    }
-
-    .wrong_answ{
-        /* width: 50px; */
-    }
-}
-
-@media screen and (max-width: 650px) {
-    .flex_list_container{
-        flex-direction: column;
-    }
-
-    .separa_corrette_sbagliate{
-        flex-direction: column;
-    }
-
-    .LIST_ITEM_STYLE{
-        /* width: 260px; */
-    }
-
-    .select_style{
-        /* width: 150px; */
-        font-size: 12px;
-    }
-}
-
-@media screen and (max-height: 900px) {
-    .wrapper_lista_domande{
-        max-height: 480px;
-    }
-}
-@media screen and (max-height: 700px) {
-    .wrapper_lista_domande{
-        max-height: 400px;
+    .main_container {
+        padding: 10px;
     }
 }

@@ -1,340 +1,256 @@
-import GenericButton from '../UI/GenericButton';
-import Card from '../UI/Card';
-import styles from './SchedaPaziente.module.css';
-import { useEffect, useState } from 'react';
-import StatistichePaziente from './StatistichePaziente';
-import CardSmall from '../UI/CardSmall';
-import { Accordion, Col, Modal, ProgressBar, Tab, Tabs } from 'react-bootstrap';
-import { getServerMgr } from '../../backend_conn/ServerMgr';
-import QRCode from 'react-qr-code';
+import styles from "./SchedaPaziente.module.css";
+import { useEffect, useState } from "react";
+import StatistichePaziente from "./StatistichePaziente";
+import GenericButton from "../UI/GenericButton";
+import { Accordion, Modal, Tab, Tabs } from "react-bootstrap";
+import { getServerMgr } from "../../backend_conn/ServerMgr";
+import QRCode from "react-qr-code";
 
 function SchedaPaziente(props) {
+  const [sezioneScheda, setSezioneScheda] = useState("DATI_PERSONALI");
+  const [credentials, setCredentials] = useState(
+    props.credentialsAccount || []
+  );
+  const [showCredentials, setShowCredentials] = useState(false);
+  const [createCredentials, setCreateCredentials] = useState(false);
 
-console.log("stampo le props",props);
+  // Form states
+  const [enteredEmail, setEnteredEmail] = useState("");
+  const [enteredPassword, setEnteredPassword] = useState("");
+  const [validity, setValidity] = useState({ email: true, password: true });
 
-    const [sezioneScheda, setSezioneScheda] = useState('DATI_PERSONALI');
-    const [informazioniMediche, setInformazioniMediche] = useState([]);
-    const [listaGiochi, setListaGiochi] = useState([]);
-    const [showCredentials, setShowCredentials] = useState(false);
-    const [createCredentials, setCreateCredentials] = useState(false);
-    const [credentials, setCredentials] = useState([]);
-    const [enteredEmail, setEnteredEmail] = useState("");
-    const [validEmail, setValidEmail] = useState(true);
-    const [errorEmailMsg, setErrorEmailMsg] = useState("");
-    const [enteredPassword, setEnteredPassword] = useState("");
-    const [validPassword, setValidPassword] = useState(true);
+  useEffect(() => {
+    setCredentials(props.credentialsAccount || []);
+  }, [props.credentialsAccount]);
 
-    useEffect(() => {
-        if (Array.isArray(props.informazioniMediche)) {
-            setInformazioniMediche(props.informazioniMediche);
-        } else {
-            setInformazioniMediche([]);
+  const creaAccountPaziente = async () => {
+    const isEmailValid = enteredEmail.includes("@");
+    const isPassValid = enteredPassword.trim().length >= 6;
+
+    setValidity({ email: isEmailValid, password: isPassValid });
+
+    if (isEmailValid && isPassValid) {
+      try {
+        const accounts = await getServerMgr().getAccount();
+        if (accounts.some((acc) => acc.email === enteredEmail)) {
+          alert("Email già esistente!");
+          return;
         }
-    }, [props.informazioniMediche]);
+        const newId = await getServerMgr().addAccount(
+          props.nome,
+          props.cognome,
+          2,
+          enteredEmail,
+          enteredPassword,
+          props.id
+        );
+        await getServerMgr().updatePatientWithProfileID(
+          newId,
+          props.id,
+          enteredEmail
+        );
+        const updatedCreds = await getServerMgr().getPatientCredentials(newId);
+        setCredentials(updatedCreds);
+        setCreateCredentials(false);
+        alert("Account creato con successo!");
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
 
-    useEffect(() => {
-        if (Array.isArray(props.listaGiochi)) {
-            setListaGiochi(props.listaGiochi);
-        } else {
-            setListaGiochi([]);
-        }
-    }, [props.listaGiochi]);
-
-    useEffect(() => {
-        if (Array.isArray(props.credentialsAccount)) {
-            setCredentials(props.credentialsAccount);
-        } else {
-            setCredentials([]);
-        }
-    }, [props.credentialsAccount]);
-
-    const selectShow = (stringa) => {
-        setSezioneScheda(stringa);
-    };
-
-    const emailChangeHandler = (event) => {
-        setEnteredEmail(event.target.value);
-        setValidEmail(true);
-        
-    };
-
-    const passwordChangeHandler = (event) => {
-        setEnteredPassword(event.target.value);
-        setValidPassword(true);
-    };
-
-    const creaAccountPaziente = async () => {
-      
-        const emailTrimmed = enteredEmail.trim();
-    
-        if (emailTrimmed.includes('@') && enteredPassword.trim().length >= 6) {
-            try {
-              
-                const result = await getServerMgr().getAccount();
-    
-                
-                if (!result || !Array.isArray(result)) {
-                    console.error("Errore nel recupero degli account dal server");
-                    return;
-                }
-    
-               
-                const emailEsistente = result.some((account) => account.email === emailTrimmed);
-    
-                if (emailEsistente) {
-                    setValidEmail(false);
-                    setErrorEmailMsg("Email già associata ad un account!");
-                    alert("Email già associata ad un account!");
-                    return;
-                }
-    
-               
-                const result2 = await getServerMgr().addAccount(props.nome, props.cognome, 2, emailTrimmed, enteredPassword, props.id);
-                alert("ACCOUNT CREATO!");
-    
-               
-                await getServerMgr().updatePatientWithProfileID(result2, props.id, emailTrimmed);
-    
-                
-                setCreateCredentials(false);
-    
-                console.log("questo è l'id dell'account recuperato con le credenziali", result2);
-    
-                
-                const resultCredentialsPatients = await getServerMgr().getPatientCredentials(result2);
-                console.log("questo è l'account recuperato con le credenziali", resultCredentialsPatients);
-                
-                setCredentials(resultCredentialsPatients); 
-            } catch (err) {
-                console.error("Errore durante la creazione dell'account:", err);
-            }
-        } else {
-          
-            if (!emailTrimmed.includes('@')) {
-                setValidEmail(false);
-                setErrorEmailMsg("Inserisci una email valida");
-            }
-    
-            
-            if (enteredPassword.trim().length < 6) {
-                setValidPassword(false);
-            }
-        }
-    };
-    
-
-    return (
-        <div style={{ width: "100%" }}>
-            <h1 className={styles.page_title}>Scheda paziente: {props.nome} {props.cognome}</h1>
-            <Tabs variant="underline" fill id="controlled-tab-example" activeKey={sezioneScheda} onSelect={selectShow}>
-                <Tab className={styles.tab_text} eventKey="DATI_PERSONALI" title="Dati">
-                    <div className={styles.horizontal_dati}>
-                        <div className={styles.section_dati}>
-                            <h3 className={styles.text_dati_personali_title}>ANAGRAFICA</h3>
-                            <div className={styles.horizontal}>
-                                <label className={styles.label_style}>NOME COMPLETO:</label>
-                                <div className={styles.content_text_style}>{props.nome} {props.cognome}</div>
-                            </div>
-                            <div className={styles.horizontal}>
-                                <label className={styles.label_style}>CITTÀ DI NASCITA:</label>
-                                <div className={styles.content_text_style}>{props.città}</div>
-                            </div>
-                            <div className={styles.horizontal}>
-                                <label className={styles.label_style}>DATA DI NASCITA:</label>
-                                <div className={styles.content_text_style}>{props.datanascita}</div>
-                            </div>
-                            <div className={styles.horizontal}>
-                                <label className={styles.label_style}>CODICE FISCALE:</label>
-                                <div className={styles.content_text_style}>{props.codicefiscale}</div>
-                            </div>
-                            <div className={styles.horizontal}>
-                                {/* <label className={styles.label_style}>CREDENZIALI:</label> */}
-                                {credentials !== null && credentials.length === 0 && (
-                                    <>
-                                        {/* <div className={styles.content_text_style}>
-                                            <GenericButton
-                                                onClick={() => setCreateCredentials((prevBool) => !prevBool)}
-                                                buttonText="Crea credenziali"
-                                                generic_button
-                                            />
-                                        </div> */}
-                                        {createCredentials && (
-                                            <Modal centered show={createCredentials}>
-                                                <Modal.Header style={{ fontWeight: "bold", fontSize: "18px" }}>Crea credenziali paziente</Modal.Header>
-                                                <Modal.Body>
-                                                    <label className={`${styles.tag_style} ${!validEmail ? styles.invalid : ''}`}>Email:</label>
-                                                    <input
-                                                        autoFocus
-                                                        value={enteredEmail}
-                                                        onChange={emailChangeHandler}
-                                                        className={`${styles.input_style} ${!validEmail ? styles.invalid : ''}`}
-                                                    />
-                                                    {!validEmail && <div style={{ color: "red", textAlign: "center" }}>{errorEmailMsg}</div>}
-                                                    <label className={`${styles.tag_style} ${!validPassword ? styles.invalid : ''}`}>Password:</label>
-                                                    <input
-                                                        value={enteredPassword}
-                                                        onChange={passwordChangeHandler}
-                                                        className={`${styles.input_style} ${!validPassword ? styles.invalid : ''}`}
-                                                    />
-                                                    {!validPassword && <div style={{ color: "red", textAlign: "center" }}>Inserisci una password con almeno 6 caratteri</div>}
-                                                    <p className={styles.paragraph_style}><b>Attenzione! </b> Queste credenziali serviranno al paziente per potersi collegare alla piattaforma e svolgere attività.</p>
-                                                    <div style={{ marginTop: "10px" }} className={styles.horizontal}>
-                                                        <GenericButton
-                                                            onClick={() => setCreateCredentials((prevBool) => !prevBool)}
-                                                            buttonText="Chiudi"
-                                                            generic_button
-                                                            red_styling
-                                                        />
-                                                        <GenericButton
-                                                            onClick={creaAccountPaziente}
-                                                            buttonText="Crea account"
-                                                            generic_button
-                                                        />
-                                                    </div>
-                                                </Modal.Body>
-                                            </Modal>
-                                        )}
-                                    </>
-                                )}
-                                {credentials !== null && credentials.length > 0 && (
-                                    <>
-                                        <div className={styles.content_text_style}>
-                                            <GenericButton
-                                                onClick={() => setShowCredentials((prevBool) => !prevBool)}
-                                                buttonText={!showCredentials ? "Visualizza" : "Nascondi"}
-                                                generic_button
-                                            />
-                                        </div>
-                                        {showCredentials && (
-                                            <Modal centered show={showCredentials}>
-                                                <Modal.Header style={{ fontWeight: "bold", fontSize: "18px" }}>Credenziali paziente</Modal.Header>
-                                                <Modal.Body>
-                                                    <div style={{ justifyContent: "space-between" }} className={styles.horizontal}>
-                                                        <div className={styles.wrapper_vertical}>
-                                                            <label className={styles.tag_style}>Email:</label>
-                                                            <div style={{ textAlign: "start" }} className={styles.content_text_style}>
-                                                                {credentials?.email || "Non disponibile"}
-                                                            </div>
-                                                            <label className={styles.tag_style}>Password:</label>
-                                                            <div style={{ textAlign: "start" }} className={styles.content_text_style}>
-                                                                {credentials?.password || "Non disponibile"}
-                                                            </div>
-                                                        </div>
-                                                        <div className={styles.wrapper_vertical}>
-                                                            <label className={styles.tag_style}>QR Code:</label>
-                                                            <QRCode value={`https://cognicare.altervista.org/QRCodeLogin/${credentials[0]?.UID}`} size={160} />
-                                                        </div>
-                                                    </div>
-                                                </Modal.Body>
-                                                <Modal.Footer style={{ justifyContent: "center" }}>
-                                                    <GenericButton
-                                                        onClick={() => setShowCredentials((prevBool) => !prevBool)}
-                                                        buttonText="Chiudi"
-                                                        generic_button
-                                                        red_styling
-                                                    />
-                                                </Modal.Footer>
-                                            </Modal>
-                                        )}
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                        <div className={styles.section_dati}>
-                            <h3 className={styles.text_dati_personali_title}>CONTATTI</h3>
-                            <div className={styles.horizontal}>
-                                <label className={styles.label_style}>EMAIL:</label>
-                                <div className={styles.content_text_style}>{props.contattoEmail || "Non inserito"}</div>
-                            </div>
-                            <div className={styles.horizontal}>
-                                <label className={styles.label_style}>CELLULARE:</label>
-                                <div className={styles.content_text_style}>{props.contattoCellulare || "Non inserito"}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr className={styles.horizontal_line} />
-                </Tab>
-
-                <Tab eventKey={"GIOCHI"} title={"Giochi"}>
-    <>
-        {listaGiochi?.length === 0 ? (
-            <h4 style={{ textAlign: "center", marginTop: "20px" }}>
-                Nessun gioco assegnato al paziente
-            </h4>
-        ) : (
-            <div className={styles.wrapper_vertical}>
-                <h3 className={styles.subtitle_text}>Elenco giochi assegnati:</h3>
-                <div style={{ width: "80%" }}>
-                    <Accordion>
-                        {listaGiochi
-                            ?.filter((gioco, index, self) =>
-                                index === self.findIndex(g => g.gameID === gioco.gameID)
-                            ) 
-                            .map((objInfo, index) => (
-                                <Accordion.Item
-                                    className={styles.accordion_item}
-                                    eventKey={`${objInfo.gameID}-${index}`} 
-                                    key={`${objInfo.gameID}-${index}`} 
-                                >
-                                    <Accordion.Header>{objInfo.nomeGioco}</Accordion.Header>
-                                    <Accordion.Body>
-                                        <div className={styles.wrapper_horizontal}>
-                                            <label className={styles.sintesiMedica_label_PATOLOGIA}>
-                                                Nome gioco:
-                                            </label>
-                                            <p className={styles.sintesiMedica_content_PATOLOGIA}>
-                                                {objInfo.nomeGioco}
-                                            </p>
-                                        </div>
-                                        <div className={styles.wrapper_horizontal}>
-                                            <label className={styles.sintesiMedica_label_TERAPIA}>
-                                                Tipo gioco:
-                                            </label>
-                                            <p className={styles.sintesiMedica_content_TERAPIA}>
-                                                {objInfo.tipoGioco}
-                                            </p>
-                                        </div>
-                                        <div className={styles.wrapper_horizontal}>
-                                            <label className={styles.sintesiMedica_label_DATA}>
-                                                Livello gioco:
-                                            </label>
-                                            <p className={styles.sintesiMedica_content_DATA}>
-                                                {objInfo.livelloGioco}
-                                            </p>
-                                        </div>
-                                    </Accordion.Body>
-                                </Accordion.Item>
-                            ))}
-                    </Accordion>
-                </div>
-            </div>
-        )}
-        <hr className={styles.horizontal_line} />
-    </>
-</Tab>
-
-
-                <Tab eventKey={"STATISTICHE"} title={"Statistiche"}>
-                    <h3 className={styles.subtitle_text}>Statistiche dei giochi:</h3>
-                    <div className={styles.wrapper_vertical}>
-                        <StatistichePaziente
-                            pazienteID={props.id}
-                            stats={props.statsPaziente}
-                        ></StatistichePaziente>
-                    </div>
-                    
-                </Tab>
-            </Tabs>
-            <div style={{width: "100%", display: "flex", justifyContent: "center"}}>
-                <GenericButton
-                    generic_button={true}
-                    red_styling
-                    onClick={props.goBackButton}
-                    buttonText='Indietro'
-                ></GenericButton>
-            </div>
+  return (
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <div className={styles.avatar}>
+          {props.nome.charAt(0)}
+          {props.cognome.charAt(0)}
         </div>
-    );
+        <div>
+          <h1 className={styles.page_title}>
+            {props.nome} {props.cognome}
+          </h1>
+          <p className={styles.patient_id}>ID Paziente: #{props.id}</p>
+        </div>
+      </header>
+
+      <div className={styles.main_card}>
+        <Tabs
+          activeKey={sezioneScheda}
+          onSelect={(k) => setSezioneScheda(k)}
+          className={styles.custom_tabs}
+        >
+          <Tab eventKey="DATI_PERSONALI" title="📍 Anagrafica">
+            <div className={styles.tab_content}>
+              <div className={styles.info_grid}>
+                <div className={styles.info_group}>
+                  <h3>Informazioni Personali</h3>
+                  <div className={styles.data_row}>
+                    <span>Città di Nascita:</span>{" "}
+                    <strong>{props.città}</strong>
+                  </div>
+                  <div className={styles.data_row}>
+                    <span>Data di Nascita:</span>{" "}
+                    <strong>{props.datanascita}</strong>
+                  </div>
+                  <div className={styles.data_row}>
+                    <span>Codice Fiscale:</span>{" "}
+                    <strong>{props.codicefiscale}</strong>
+                  </div>
+                </div>
+                <div className={styles.info_group}>
+                  <h3>Contatti</h3>
+                  <div className={styles.data_row}>
+                    <span>Email:</span>{" "}
+                    <strong>{props.contattoEmail || "N/A"}</strong>
+                  </div>
+                  <div className={styles.data_row}>
+                    <span>Cellulare:</span>{" "}
+                    <strong>{props.contattoCellulare || "N/A"}</strong>
+                  </div>
+                </div>
+                <div className={styles.info_group_full}>
+                  <h3>Accesso Piattaforma</h3>
+                  {credentials.length === 0 ? (
+                    <div className={styles.empty_creds}>
+                      <p>Nessun account associato.</p>
+                      <GenericButton
+                        onClick={() => setCreateCredentials(true)}
+                        buttonText="Crea Credenziali"
+                        generic_button
+                      />
+                    </div>
+                  ) : (
+                    <div className={styles.active_creds}>
+                      <span>Account attivo: {credentials[0]?.email}</span>
+                      <GenericButton
+                        onClick={() => setShowCredentials(true)}
+                        buttonText="Visualizza Accesso"
+                        generic_button
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Tab>
+
+          <Tab eventKey="GIOCHI" title="🎮 Giochi">
+            <div className={styles.tab_content}>
+              {props.listaGiochi?.length === 0 ? (
+                <p className={styles.no_data_msg}>
+                  Nessun gioco assegnato attualmente.
+                </p>
+              ) : (
+                <Accordion className={styles.custom_accordion}>
+                  {props.listaGiochi.map((gioco, i) => (
+                    <Accordion.Item eventKey={i.toString()} key={gioco.gameID}>
+                      <Accordion.Header>{gioco.nomeGioco}</Accordion.Header>
+                      <Accordion.Body>
+                        <div className={styles.accordion_grid}>
+                          <div>
+                            Tipo: <strong>{gioco.tipoGioco}</strong>
+                          </div>
+                          <div>
+                            Livello: <strong>{gioco.livelloGioco}</strong>
+                          </div>
+                        </div>
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  ))}
+                </Accordion>
+              )}
+            </div>
+          </Tab>
+
+          <Tab eventKey="STATISTICHE" title="📊 Statistiche">
+            <div className={styles.tab_content}>
+              <StatistichePaziente
+                pazienteID={props.id}
+                stats={props.statsPaziente}
+              />
+            </div>
+          </Tab>
+        </Tabs>
+      </div>
+
+      <div className={styles.footer_actions}>
+        <GenericButton
+          generic_button
+          red_styling
+          onClick={props.goBackButton}
+          buttonText="Torna allo Schedario"
+        />
+      </div>
+
+      {/* Modale Visualizzazione Credenziali */}
+      <Modal
+        centered
+        show={showCredentials}
+        onHide={() => setShowCredentials(false)}
+        contentClassName={styles.modal_custom}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Chiave di Accesso Paziente</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className={styles.modal_qr_body}>
+          <div className={styles.qr_container}>
+            <QRCode
+              value={`https://cognicare.altervista.org/QRCodeLogin/${credentials[0]?.UID}`}
+              size={180}
+            />
+          </div>
+          <div className={styles.creds_details}>
+            <p>
+              <strong>Email:</strong> {credentials[0]?.email}
+            </p>
+            <p>
+              <strong>Password:</strong> {credentials[0]?.password}
+            </p>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      {/* Modale Creazione Credenziali */}
+      <Modal
+        centered
+        show={createCredentials}
+        onHide={() => setCreateCredentials(false)}
+        contentClassName={styles.modal_custom}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Nuovo Account Paziente</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className={styles.form_group}>
+            <label>Email</label>
+            <input
+              type="email"
+              value={enteredEmail}
+              onChange={(e) => setEnteredEmail(e.target.value)}
+              className={!validity.email ? styles.invalid : ""}
+            />
+          </div>
+          <div className={styles.form_group}>
+            <label>Password (min. 6 caratteri)</label>
+            <input
+              type="password"
+              value={enteredPassword}
+              onChange={(e) => setEnteredPassword(e.target.value)}
+              className={!validity.password ? styles.invalid : ""}
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <GenericButton
+            onClick={creaAccountPaziente}
+            buttonText="Conferma e Crea"
+            generic_button
+          />
+        </Modal.Footer>
+      </Modal>
+    </div>
+  );
 }
 
 export default SchedaPaziente;

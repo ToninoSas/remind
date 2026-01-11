@@ -1,195 +1,169 @@
 import styles from "./ElencoDomandeModificabili.module.css";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState, useMemo } from "react";
 import GameContext from "../../context/game-context";
 import GenericButton from "../UI/GenericButton";
 import AuthContext from "../../context/auth-context";
 
-let domande_esistenti = 0;
-
 function ElencoDomandeModificabili(props) {
-    const game_ctx = useContext(GameContext);
-    const auth_ctx = useContext(AuthContext);
+  const game_ctx = useContext(GameContext);
+  const auth_ctx = useContext(AuthContext);
 
-    const [questionsList, setQuestionsList] = useState(game_ctx.domande);
-    const [imagesList, setImagesList] = useState([]);
-    const [gameType, setGameType] = useState("QUIZ");
+  const [gameType, setGameType] = useState("QUIZ");
+  const websiteUrl = "/immagini/";
 
-    const [domande_esistenti, set_domande_esistenti] = useState(false);
-    
-    const [categoryFilter, setCategoryFilter] = useState("Tutte");
+  // Filtriamo le domande in base al tipo di gioco selezionato
+  const filteredQuestions = useMemo(() => {
+    return game_ctx.domande?.filter((q) => q.tipoGioco === gameType) || [];
+  }, [game_ctx.domande, gameType]);
 
-    const websiteUrl = "/immagini/";
+  const hasQuestions = filteredQuestions.length > 0;
 
-    useEffect(() => {
-        set_domande_esistenti(false)
-    }, [gameType])
+  function gameTypeChangeHandler(event) {
+    setGameType(event.target.value);
+  }
 
-    function gameTypeChangeHandler(event) {
-        setCategoryFilter("Tutte");
-        setGameType(event.target.value);
+  const renderMedia = (question) => {
+    switch (gameType) {
+      case "QUIZ CON IMMAGINI":
+        return (
+          <img
+            className={styles.preview_media}
+            src={websiteUrl + question.immagine}
+            alt="Preview"
+          />
+        );
+      case "QUIZ CON SUONI":
+        return (
+          <audio
+            className={styles.audio_player}
+            controls
+            src={websiteUrl + question.immagine}
+          ></audio>
+        );
+      case "QUIZ CON VIDEO":
+        return (
+          <video className={styles.video_player} controls>
+            <source src={websiteUrl + question.immagine} type="video/mp4" />
+          </video>
+        );
+      default:
+        return null;
     }
+  };
 
-    function recuperaTutteLeDomande(singleQuestion) {
-        console.log("log della domanda".singleQuestion);
-        if (singleQuestion.tipoGioco === gameType && !domande_esistenti) {
-            set_domande_esistenti(true);
-        }
-        if (singleQuestion.tipoGioco === gameType) {
-            return (
-                <li className={styles.LIST_ITEM_STYLE}>
+  return (
+    <div className={styles.main_container}>
+      {game_ctx.showModale && game_ctx.modale}
 
-                    {gameType === "QUIZ" &&
-                        <div className={styles.flex_list_container}>
-                            <h4 className={styles.subtitle_style}>Domanda:</h4>
-                            <p className={styles.question_style}>{singleQuestion.domanda}</p>
-                        </div>
-                    }
-
-                    {gameType === "QUIZ CON IMMAGINI" &&
-                        <div className={styles.flex_list_container}>
-                            <h4 className={styles.subtitle_style}>Immagine:</h4>
-                            <img className={styles.preview_image} src={websiteUrl.concat(singleQuestion.immagine)} alt="Immagine domande" />
-                            <h4 className={styles.subtitle_style}>Domanda:</h4>
-                            <p className={styles.question_style}>{singleQuestion.domanda}</p>
-                        </div>
-                    }
-
-                    {gameType === "QUIZ CON SUONI" &&
-                        <div className={styles.flex_list_container}>
-                            <h4 className={styles.subtitle_style}>Audio:</h4>
-                            <audio controls src={websiteUrl.concat(singleQuestion.immagine)}></audio>
-                            <h4 className={styles.subtitle_style}>Domanda:</h4>
-                            <p className={styles.question_style}>{singleQuestion.domanda}</p>
-                        </div>
-                    }
-
-                    {gameType === "QUIZ CON VIDEO" && 
-                        <div className={styles.flex_list_container}>
-                            <h4 className={styles.subtitle_style}>Video:</h4>
-                            <video className={styles.preview_video} controls>
-                                <source src={websiteUrl.concat(singleQuestion.immagine)} type="video/mp4" />
-                                Your browser does not support the video tag.
-                            </video>
-                            <h4 className={styles.subtitle_style}>Domanda:</h4>
-                            <p className={styles.question_style}>{singleQuestion.domanda}</p>
-                        </div>
-                    }
-
-                    {gameType === "COMPLETA LA PAROLA" &&
-                        <>
-                            <div className={styles.flex_list_container}>
-                                <h4 className={styles.subtitle_style}>Parola:</h4>
-                                <p className={styles.question_style}>{singleQuestion.domanda}</p>
-                            </div>
-                            <div className={styles.flex_list_container}>
-                                <h4 className={styles.subtitle_style}>Aiuto:</h4>
-                                <p className={styles.question_style}>{singleQuestion.suggerimento}</p>
-                            </div>
-                        </>
-                    }
-
-                    {(gameType === "QUIZ" || gameType === "QUIZ CON IMMAGINI" || gameType === "QUIZ CON SUONI" || gameType === "QUIZ CON VIDEO") &&
-                        <div className={styles.separa_corrette_sbagliate}>
-                            <span className={styles.buttons_space}>
-                                <p style={{ margin: "0" }}>CORRETTE</p>
-                                {singleQuestion.rispCorrettaN1 && singleQuestion.rispCorrettaN1.trim().length > 0 && (
-                                    <p className={styles.correct_answ}>{singleQuestion.rispCorrettaN1.toString()}</p>
-                                )}
-                                {singleQuestion.rispCorrettaN2 && singleQuestion.rispCorrettaN2.trim().length > 0 && (
-                                    <p className={styles.correct_answ}>{singleQuestion.rispCorrettaN2.toString()}</p>
-                                )}
-                                {singleQuestion.rispCorrettaN3 && singleQuestion.rispCorrettaN3.trim().length > 0 && (
-                                    <p className={styles.correct_answ}>{singleQuestion.rispCorrettaN3.toString()}</p>
-                                )}
-                                {singleQuestion.rispCorrettaN4 && singleQuestion.rispCorrettaN4.trim().length > 0 && (
-                                    <p className={styles.correct_answ}>{singleQuestion.rispCorrettaN4.toString()}</p>
-                                )}
-                            </span>
-                            
-                            <span className={styles.buttons_space}>
-                                <p style={{ margin: "0" }}>SBAGLIATE</p>
-                                {singleQuestion.rispSbagliataN1 && singleQuestion.rispSbagliataN1.trim().length > 0 && (
-                                    <p className={styles.wrong_answ}>{singleQuestion.rispSbagliataN1.toString()}</p>
-                                )}
-                                {singleQuestion.rispSbagliataN2 && singleQuestion.rispSbagliataN2.trim().length > 0 && (
-                                    <p className={styles.wrong_answ}>{singleQuestion.rispSbagliataN2.toString()}</p>
-                                )}
-                                {singleQuestion.rispSbagliataN3 && singleQuestion.rispSbagliataN3.trim().length > 0 && (
-                                    <p className={styles.wrong_answ}>{singleQuestion.rispSbagliataN3.toString()}</p>
-                                )}
-                                {singleQuestion.rispSbagliataN4 && singleQuestion.rispSbagliataN4.trim().length > 0 && (
-                                    <p className={styles.wrong_answ}>{singleQuestion.rispSbagliataN4.toString()}</p>
-                                )}
-                            </span>
-                        </div>
-                    }
-
-                    <div className={styles.flex_list_container}>
-                        <h4 className={styles.subtitle_style}>Opzioni:</h4>
-                        <div className={styles.option_buttons}>
-                            <GenericButton
-                                onClick={() => {
-                                    props.modificaSingolaDomanda(gameType, singleQuestion, singleQuestion.ID);
-                                }}
-                                generic_button={true}
-                                buttonText={"Modifica domanda"}
-                            />
-                            <GenericButton
-                                onClick={() => {
-                                    game_ctx.eliminaDomanda(singleQuestion.ID);
-                                }}
-                                generic_button={true}
-                                red_styling
-                                buttonText={"Elimina domanda"}
-                            />
-                        </div>
-                    </div>
-                </li>
-            );
-        }
-        else {
-            return null;
-        }
-    }
-
-    return (
-      <>
-        {game_ctx.showModale && game_ctx.modale}
-
-        <div className={styles.wrap_flex_generico}>
-          <div>
-            <label className={styles.label_style}>Tipo gioco</label>
-            <select
-              className={styles.select_style}
-              defaultValue={gameType}
-              onChange={gameTypeChangeHandler}
-            >
-              <option>QUIZ</option>
-              <option>QUIZ CON IMMAGINI</option>
-              <option>QUIZ CON SUONI</option>
-              <option>QUIZ CON VIDEO</option>
-              <option>COMPLETA LA PAROLA</option>
-            </select>
-          </div>
+      <div className={styles.filter_section}>
+        <div className={styles.input_group}>
+          <label className={styles.label_style}>Filtra per Tipo Gioco</label>
+          <select
+            className={styles.select_style}
+            value={gameType}
+            onChange={gameTypeChangeHandler}
+          >
+            <option>QUIZ</option>
+            <option>QUIZ CON IMMAGINI</option>
+            <option>QUIZ CON SUONI</option>
+            <option>QUIZ CON VIDEO</option>
+            <option>COMPLETA LA PAROLA</option>
+          </select>
         </div>
+      </div>
 
-        <hr style={{ width: "100%" }} />
+      <hr className={styles.divider} />
 
-        {!domande_esistenti && (
-          <h2 style={{ textAlign: "center" }}>
-            Non hai creato domande per questo tipo di gioco
-          </h2>
-        )}
+      {!hasQuestions ? (
+        <div className={styles.no_data}>
+          <h2>Nessuna domanda trovata per questa categoria</h2>
+          <p>Inizia a crearne una per visualizzarla qui.</p>
+        </div>
+      ) : (
+        <ul className={styles.questions_grid}>
+          {filteredQuestions.map((q) => (
+            <li key={q.ID} className={styles.question_card}>
+              <div className={styles.card_header}>
+                {/* <span className={styles.badge_id}>ID: {q.ID}</span> */}
+                {gameType === "COMPLETA LA PAROLA" ? (
+                  <h4 className={styles.word_title}>
+                    Parola: <span>{q.domanda}</span>
+                  </h4>
+                ) : (
+                  <p className={styles.question_text}>{q.domanda}</p>
+                )}
+              </div>
 
-        {game_ctx.domande?.length > 0 && (
-          <ul className={styles.wrapper_lista_domande}>
-            {console.log(game_ctx.domande)}
+              <div className={styles.card_body}>
+                {renderMedia(q)}
 
-            {game_ctx.domande.map(recuperaTutteLeDomande)}
-          </ul>
-        )}
-      </>
-    );
+                {gameType === "COMPLETA LA PAROLA" && (
+                  <div className={styles.hint_box}>
+                    <strong>Suggerimento:</strong> {q.suggerimento}
+                  </div>
+                )}
+
+                {gameType.includes("QUIZ") && (
+                  <div className={styles.answers_container}>
+                    <div className={styles.answer_group}>
+                      <label>Corrette:</label>
+                      <div className={styles.chips_wrapper}>
+                        {[
+                          q.rispCorrettaN1,
+                          q.rispCorrettaN2,
+                          q.rispCorrettaN3,
+                          q.rispCorrettaN4,
+                        ]
+                          .filter((r) => r && r.trim() !== "")
+                          .map((r, i) => (
+                            <span key={i} className={styles.chip_correct}>
+                              {r}
+                            </span>
+                          ))}
+                      </div>
+                    </div>
+                    <div className={styles.answer_group}>
+                      <label>Sbagliate:</label>
+                      <div className={styles.chips_wrapper}>
+                        {[
+                          q.rispSbagliataN1,
+                          q.rispSbagliataN2,
+                          q.rispSbagliataN3,
+                          q.rispSbagliataN4,
+                        ]
+                          .filter((r) => r && r.trim() !== "")
+                          .map((r, i) => (
+                            <span key={i} className={styles.chip_wrong}>
+                              {r}
+                            </span>
+                          ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className={styles.card_actions}>
+                <GenericButton
+                  onClick={() =>
+                    props.modificaSingolaDomanda(gameType, q, q.ID)
+                  }
+                  generic_button={true}
+                  buttonText={"Modifica"}
+                />
+                <GenericButton
+                  onClick={() => game_ctx.eliminaDomanda(q.ID)}
+                  generic_button={true}
+                  red_styling
+                  buttonText={"Elimina"}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 export default ElencoDomandeModificabili;

@@ -1,47 +1,42 @@
-// import { useState } from 'react';
-import { useContext } from 'react';
-import styles from './TabellaPazienti.module.css';
-import PatientContext from '../../context/patients-context';
+import { useContext } from "react";
+import styles from "./TabellaPazienti.module.css";
+import PatientContext from "../../context/patients-context";
 
-function TabellaPazienti(props){
-    const patients_ctx = useContext(PatientContext);
+function TabellaPazienti(props) {
+  const patients_ctx = useContext(PatientContext);
+  const hasPatients = props.elenco && props.elenco.length > 0;
 
-    if(props.elenco.length > 0){
-        return(
-            <div className={styles.outer_wrapper_table}>
-                <table className={styles.table_wrapper}>
-                    <thead>
-                        <tr>
-                            <th className={`${styles['intestazione_tabella']} ${styles['nome']}`}>NOME</th>
-                            <th className={`${styles['intestazione_tabella']} ${styles['cognome']}`}>COGNOME</th>
-                            <th className={`${styles['intestazione_tabella']} ${styles['città']}`}>CITTA' DI NASCITA</th>
-                            <th className={`${styles['intestazione_tabella']} ${styles['data']}`}>DATA DI NASCITA</th>
-                            <th className={`${styles['intestazione_tabella']} ${styles['codicefiscale']}`}>CODICE FISCALE</th>
-                            {/* <th className={styles.intestazione_tabella}>ATTIVITÀ</th> */}
-                            {/* <th className={`${styles['intestazione_tabella']} ${styles['opzioni']}`}>OPZIONI</th> */}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {props.elenco}
-                    </tbody>
-                </table>
-            </div>
-        );
-    }
-    else{
-        return(
-            <table className={styles.table_wrapper}>
-                <thead>
-                    <tr>
-                        <th className={`${styles['intestazione_tabella']} ${styles['nome']}`}>NESSUN PAZIENTE REGISTRATO</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style={{textAlign: "center", fontSize: "20px"}}><td style={{display: "block", padding: "10px"}}>Aggiungi un paziente per visualizzare lo schedario.</td></tr>
-                </tbody>
+  return (
+    <div className={styles.main_container}>
+      <div className={styles.table_card}>
+        {!hasPatients ? (
+          <div className={styles.empty_state}>
+            <div className={styles.icon_bg}>👥</div>
+            <h3>Schedario Vuoto</h3>
+            <p>
+              Non ci sono pazienti registrati. Inizia aggiungendo un nuovo
+              profilo per gestire le sue attività.
+            </p>
+          </div>
+        ) : (
+          <div className={styles.scroll_area}>
+            <table className={styles.modern_table}>
+              <thead>
+                <tr>
+                  <th>NOME</th>
+                  <th>COGNOME</th>
+                  <th>CITTÀ DI NASCITA</th>
+                  <th>DATA DI NASCITA</th>
+                  <th>CODICE FISCALE</th>
+                </tr>
+              </thead>
+              <tbody>{props.elenco}</tbody>
             </table>
-        );
-    }
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default TabellaPazienti;
