@@ -1,210 +1,111 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import styles from "./StatistichePaziente.module.css";
-import { getServerMgr } from "../../backend_conn/ServerMgr";
 import { ProgressBar } from "react-bootstrap";
 
-function StatistichePaziente(props){
-    // let fillCorrect = "0%";
-    // let fillWrong = "0%";
-    const [today, setToday] = useState();
-    const [day, setDay] = useState();
-    const [month, setMonth] = useState();
-    const [year, setYear] = useState();
-
-    const [fillCorrect, setFillCorrect] = useState(0);
-    const [fillWrong, setFillWrong] = useState(0);
-
-    const [risultatiTotali, setRisultatiTotali] = useState(props.stats);
-
-    const [risposteTotali, setRisposteTotali] = useState(0);
-    const [risposteCorrette, setRisposteCorrette] = useState(0);
-    const [risposteSbagliate, setRisposteSbagliate] = useState(0);
-
+function StatistichePaziente(props) {
     const [filtroStatistiche, setFiltroStatistiche] = useState("Totali");
+    const risultatiTotali = props.stats || [];
 
-    const patientID = props.pazienteID;
+    // Calcolo delle statistiche filtrate tramite useMemo per performance ottimali
+    const stats = useMemo(() => {
+        let tot = 0, corr = 0, sbag = 0;
+        const now = Date.now();
 
-    useEffect(() => {
-        var today = new Date();
-        var day = parseInt(today.toLocaleString('it-IT', {day: '2-digit'}))
-        var month = parseInt(today.toLocaleString('it-IT', {month: '2-digit'}))
-        var year = parseInt(today.getFullYear());
+        risultatiTotali.forEach((item) => {
+            const dataEsecuzione = new Date(item.dataSvolgimento).getTime();
+            const diffMs = now - dataEsecuzione;
 
-        setToday(Date.parse(today));
-        setDay(day);
-        setMonth(month);
-        setYear(year);
+            let include = false;
+            if (filtroStatistiche === "Totali") include = true;
+            else if (filtroStatistiche === "ultime 48 ore" && diffMs < 172800000) include = true;
+            else if (filtroStatistiche === "ultima settimana" && diffMs < 604800000) include = true;
+            else if (filtroStatistiche === "ultimi 30 giorni" && diffMs < 2592000000) include = true;
 
-        console.log(Date.parse(today))
-        
-    }, [])
-
-    useEffect(() => {
-        // setRisposteTotali(0);
-        // setRisposteCorrette(0);
-        // setRisposteSbagliate(0);
-        filtraRisultatiTotali();
-        // calculatePercentage();
-    }, [filtroStatistiche])
-
-    // async function getPatientLifetimeStatistics(){
-    //     let result;
-
-    //     result = await getServerMgr().getPatientStatistics(patientID);
-
-    //     risultatiTotali = result;
-        
-    // }
-
-    function filtraRisultatiTotali(){
-        let risposte_TOT = 0;
-        let risposte_CORR = 0;
-        let risposte_SBAG = 0;
-
-        if(risultatiTotali){
-            switch(filtroStatistiche){
-                case "Totali":
-                    risultatiTotali.forEach((item) => {
-                        risposte_TOT += item.rispTotali;
-                        risposte_CORR += item.rispCorrette;
-                        risposte_SBAG += item.rispSbagliate;
-                        // setRisposteTotali((prevRispTot) => (prevRispTot + item.rispTotali));
-                        // setRisposteCorrette((prevRispCorr) => (prevRispCorr + item.rispCorrette));
-                        // setRisposteSbagliate((prevRispSbag) => (prevRispSbag + item.rispSbagliate));
-                    });
-                    // setFillCorrect((risposte_CORR / risposte_TOT) * 100)
-                    // setFillWrong((risposte_SBAG / risposte_TOT) * 100)
-                    setRisposteTotali(risposte_TOT);
-                    setRisposteCorrette(risposte_CORR);
-                    setRisposteSbagliate(risposte_SBAG);
-                    // console.log(risposte_TOT)
-                    break;
-                case "ultime 48 ore":
-                    risultatiTotali.forEach((item) => {
-                        var dataEsecuzioneGioco = new Date(item.dataSvolgimento);
-                        // console.log(today - Date.parse(dataEsecuzioneGioco))
-
-                        // console.log(dataEsecuzioneGioco.getFullYear() === year);
-                        // console.log((dataEsecuzioneGioco.getMonth() + 1) === month);
-                        // console.log((dataEsecuzioneGioco.getDate() + 1) === day);
-                        // console.log(dataEsecuzioneGioco.getDate() === day);
-                        
-                        if(today - Date.parse(dataEsecuzioneGioco) < 172800000){
-                            risposte_TOT += item.rispTotali;
-                            risposte_CORR += item.rispCorrette;
-                            risposte_SBAG += item.rispSbagliate;
-                        }
-                        
-                    });
-                    setRisposteTotali(risposte_TOT);
-                    setRisposteCorrette(risposte_CORR);
-                    setRisposteSbagliate(risposte_SBAG);
-                    break;
-                case "ultima settimana":
-                    risultatiTotali.forEach((item) => {
-                        var dataEsecuzioneGioco = new Date(item.dataSvolgimento);
-
-                        // console.log((dataEsecuzioneGioco.getMonth() + 1) === month);
-                        // console.log((dataEsecuzioneGioco.getDate() + 1) === day);
-                        // console.log(dataEsecuzioneGioco.getDate() === day);
-                        
-                        if(today - Date.parse(dataEsecuzioneGioco) < 604800000){
-                            risposte_TOT += item.rispTotali;
-                            risposte_CORR += item.rispCorrette;
-                            risposte_SBAG += item.rispSbagliate;
-                        }
-                        
-                    });
-                    setRisposteTotali(risposte_TOT);
-                    setRisposteCorrette(risposte_CORR);
-                    setRisposteSbagliate(risposte_SBAG);
-                    break;
-                case "ultimi 30 giorni":
-                    risultatiTotali.forEach((item) => {
-                        var dataEsecuzioneGioco = new Date(item.dataSvolgimento);
-                        console.log(today - Date.parse(dataEsecuzioneGioco) < 604800000);
-
-                        // console.log(dataEsecuzioneGioco.getFullYear() === year);
-                        // console.log((dataEsecuzioneGioco.getMonth() + 1) === month);
-                        // console.log((dataEsecuzioneGioco.getDate() + 1) === day);
-                        // console.log(dataEsecuzioneGioco.getDate() === day);
-                        
-                        if(today - Date.parse(dataEsecuzioneGioco) < 2600640000){
-                            risposte_TOT += item.rispTotali;
-                            risposte_CORR += item.rispCorrette;
-                            risposte_SBAG += item.rispSbagliate;
-                        }
-                        
-                    });
-                    setRisposteTotali(risposte_TOT);
-                    setRisposteCorrette(risposte_CORR);
-                    setRisposteSbagliate(risposte_SBAG);
-                    break;
-                default:
-                    break;
+            if (include) {
+                tot += item.rispTotali;
+                corr += item.rispCorrette;
+                sbag += item.rispSbagliate;
             }
-            
-        }
-        // calculatePercentage();
-    }
+        });
 
-    function filtroStatisticheChangeHandler(event){
-        setFiltroStatistiche(event.target.value);
-        console.log(event.target.value)
-    }
+        const percCorr = tot > 0 ? ((corr / tot) * 100).toFixed(1) : 0;
+        const percSbag = tot > 0 ? ((sbag / tot) * 100).toFixed(1) : 0;
 
-    function calculatePercentage(){
-        if(risposteTotali > 0){
-            setFillCorrect(Math.round((risposteCorrette / risposteTotali) * 100));
-            setFillWrong(Math.round((risposteSbagliate / risposteTotali) * 100));
-        }
-        else{
-            setFillCorrect(0)
-            setFillWrong(0)
-        }
-    }
-    
+        return { tot, corr, sbag, percCorr, percSbag };
+    }, [filtroStatistiche, risultatiTotali]);
 
-    return(
-        <>
-            <div className={styles.vertical}>
-                <h4 className={styles.subtitle}>Periodo temporale:</h4>
-                <select value={filtroStatistiche} onChange={filtroStatisticheChangeHandler} className={styles.select_style}>
+    return (
+        <div className={styles.stats_container}>
+            {/* Header con Filtro */}
+            <div className={styles.filter_header}>
+                <label className={styles.filter_label}>Analisi Periodo:</label>
+                <select 
+                    value={filtroStatistiche} 
+                    onChange={(e) => setFiltroStatistiche(e.target.value)} 
+                    className={styles.select_modern}
+                >
                     <option>Totali</option>
                     <option>ultime 48 ore</option>
                     <option>ultima settimana</option>
                     <option>ultimi 30 giorni</option>
                 </select>
             </div>
-            
-            {/* <h1>CIAOO</h1> */}
-            <div className={styles.wrapper_statistiche}>
-                <div className={styles.wrapper_barre}>
-                    <h3 style={{width: "90%", textAlign: "left", color: "#163172"}}>Percentuali</h3>
-                    <div style={{width: "90%", margin: "5px"}}>
-                        <ProgressBar animated now={risposteTotali === 0 ? 0 : (risposteCorrette/risposteTotali) * 100} variant="success"
-                        ></ProgressBar>
-                        <div style={{color: "darkgreen"}}>Percentuale risposte corrette: {risposteTotali === 0 ? '0%' : `${((risposteCorrette/risposteTotali) * 100).toFixed(2)}%`}</div>
-                    </div>
-                    <div style={{width: "90%", margin: "5px"}}>
-                        <ProgressBar animated now={risposteTotali === 0 ? 0 : (risposteSbagliate/risposteTotali) * 100} variant="danger"
-                        ></ProgressBar>
-                        <div style={{color: "darkred"}}>Percentuale risposte sbagliate: {risposteTotali === 0 ? '0%' : `${((risposteSbagliate/risposteTotali) * 100).toFixed(2)}%`}</div>
-                    </div>
 
-                    {/* <div className={styles.barra}>
-                        <div style={{width: fillWrong}} className={styles.riempimento_barra_sbagliate}></div>
-                    </div> */}
+            {/* Grid delle schede numeriche (KPI) */}
+            <div className={styles.kpi_grid}>
+                <div className={styles.kpi_card}>
+                    <span className={styles.kpi_icon}>📝</span>
+                    <div className={styles.kpi_data}>
+                        <span className={styles.kpi_value}>{stats.tot}</span>
+                        <span className={styles.kpi_title}>Domande Totali</span>
+                    </div>
                 </div>
-                <div className={styles.wrapper_numeri}>
-                    <h3 style={{width: "90%", textAlign: "left", color: "#163172"}}>Numeri</h3>
-                    <label className={styles.content_style}>Numero totale di domande svolte: {risposteTotali}</label>
-                    <label className={styles.content_style}>Totale risposte corrette: {risposteCorrette}</label>
-                    <label className={styles.content_style}>Totale risposte sbagliate: {risposteSbagliate}</label>
+                <div className={`${styles.kpi_card} ${styles.success}`}>
+                    <span className={styles.kpi_icon}>✅</span>
+                    <div className={styles.kpi_data}>
+                        <span className={styles.kpi_value}>{stats.corr}</span>
+                        <span className={styles.kpi_title}>Corrette</span>
+                    </div>
                 </div>
-                
+                <div className={`${styles.kpi_card} ${styles.danger}`}>
+                    <span className={styles.kpi_icon}>❌</span>
+                    <div className={styles.kpi_data}>
+                        <span className={styles.kpi_value}>{stats.sbag}</span>
+                        <span className={styles.kpi_title}>Sbagliate</span>
+                    </div>
+                </div>
             </div>
-        </>
+
+            {/* Sezione Grafica */}
+            <div className={styles.visual_card}>
+                <h3 className={styles.card_title}>Rendimento Percentuale</h3>
+                
+                <div className={styles.progress_section}>
+                    <div className={styles.progress_info}>
+                        <span>Risposte Corrette</span>
+                        <span className={styles.perc_text_green}>{stats.percCorr}%</span>
+                    </div>
+                    <ProgressBar 
+                        now={stats.percCorr} 
+                        variant="success" 
+                        animated 
+                        className={styles.custom_bar}
+                    />
+                </div>
+
+                <div className={styles.progress_section}>
+                    <div className={styles.progress_info}>
+                        <span>Risposte Sbagliate</span>
+                        <span className={styles.perc_text_red}>{stats.percSbag}%</span>
+                    </div>
+                    <ProgressBar 
+                        now={stats.percSbag} 
+                        variant="danger" 
+                        className={styles.custom_bar}
+                    />
+                </div>
+            </div>
+        </div>
     );
 }
 

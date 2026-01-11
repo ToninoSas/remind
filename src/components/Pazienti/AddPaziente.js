@@ -4,237 +4,56 @@ import styles from "./AddPaziente.module.css";
 import AuthContext from "../../context/auth-context";
 import { getServerMgr } from "../../backend_conn/ServerMgr";
 import PatientContext from "../../context/patients-context";
-import CardSmall from "../UI/CardSmall";
-
-import DeleteButton from "../UI/DeleteButton";
-import { Accordion, Collapse, Modal } from "react-bootstrap";
-import EditButton from "../UI/EditButton";
+import { Modal } from "react-bootstrap";
 
 function AddPaziente(props) {
     const auth_ctx = useContext(AuthContext);
     const patients_ctx = useContext(PatientContext);
 
-    var emailEsistente = null;
-
     const [stepAggiuntaPaziente, setStepAggiuntaPaziente] = useState(1);
 
-    const [validNome, setValidNome] = useState(true);
+    // Form States
     const [enteredNome, setEnteredNome] = useState("");
-
-    const [validCognome, setValidCognome] = useState(true);
     const [enteredCognome, setEnteredCognome] = useState("");
-
-    const [validCittà, setValidCittà] = useState(true);
     const [enteredCittà, setEnteredCittà] = useState("");
-
-    const [validData, setValidData] = useState(true);
     const [enteredData, setEnteredData] = useState("");
-    const [errorMinData, setErrorMinData] = useState(false);
-
-    const [validCF, setValidCF] = useState(true);
     const [enteredCF, setEnteredCF] = useState("");
-
-    const [validContattoEmail, setValidContattoEmail] = useState(true);
-    const [contattoEmail, setContattoEmail] = useState("");
-
-    const [validContattoCellulare, setValidContattoCellulare] = useState(true);
-    const [contattoCellulare, setContattoCellulare] = useState("");
-
-    const [patologiaSelezionata, setPatologiaSelezionata] = useState("");
-    const [patologiaSelezionataOggetto, setPatologiaSelezionataOggetto] =
-        useState({});
-
-    const [terapiaSelezionata, setTerapiaSelezionata] = useState();
-    const [showFormAddTherapy, setShowFormAddTherapy] = useState(false);
-
-    const [countTerapie, setCountTerapie] = useState(1);
-    const [terapiaDaModificare, setTerapiaDaModificare] = useState("");
-    const [validTerapia, setValidTerapia] = useState(true);
-    const [noteDaModificare, setNoteDaModificare] = useState("");
-
-    const [dataInizioTerapia, setDataInizioTerapia] = useState("");
-    const [dataFineTerapia, setDataFineTerapia] = useState("");
-
-    const [stringaPrescrittaDa, setStringaPrescrittaDa] = useState("");
-    const [validStringaPrescrittaDa, setValidStringaPrescrittaDa] =
-        useState(true);
-
-    const [informazioniMediche, setInformazioniMediche] = useState([]);
-    const [ID_modificaTerapia, setID_modificaTerapia] = useState();
-    const [modaleAggiungiTerapia, setModaleAggiungiTerapia] = useState(false);
-    const [modaleModificaTerapia, setModaleModificaTerapia] = useState(false);
-
+    
+    // Validation States
+    const [errors, setErrors] = useState({});
+    
+    // Account States
     const [modaleCreazioneAccount, setModaleCreazioneAccount] = useState(false);
-    const [credenzialiInserite, setCredenzialiInserite] = useState(false);
     const [enteredEmail, setEnteredEmail] = useState("");
-    const [validEmail, setValidEmail] = useState(true);
-    const [errorEmailMsg, setErrorEmailMsg] = useState("");
     const [enteredPsw, setEnteredPsw] = useState("");
-    const [validPsw, setValidPsw] = useState(true);
 
-    useEffect(() => {
-        setPatologiaSelezionata("");
+    const validateStep1 = () => {
+        let newErrors = {};
+        if (!enteredNome.trim()) newErrors.nome = "Nome obbligatorio";
+        if (!enteredCognome.trim()) newErrors.cognome = "Cognome obbligatorio";
+        if (!enteredCittà.trim()) newErrors.citta = "Città obbligatoria";
+        if (!enteredData) newErrors.data = "Data non valida";
+        if (enteredCF.trim().length !== 16) newErrors.cf = "Il CF deve essere di 16 caratteri";
 
-        setDataInizioTerapia("");
-        setDataFineTerapia("");
-    }, [informazioniMediche]);
+        const birthDate = new Date(enteredData);
+        if (birthDate < new Date("1870-01-01")) newErrors.data = "Data troppo remota";
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     const stepSuccessivo = () => {
-        var dateee = new Date(enteredData);
-
-        var day = dateee.toLocaleString("it-IT", { day: "2-digit" });
-        var month = dateee.toLocaleString("it-IT", { month: "2-digit" });
-        var year = dateee.getFullYear();
-
-        let dateString = `${year}-${month}-${day}`;
-
-        switch (stepAggiuntaPaziente) {
-            case 1:
-                if (stepAggiuntaPaziente === 1) {
-                    if (
-                        enteredNome.trim().length < 1 ||
-                        enteredCognome.trim().length < 1 ||
-                        enteredCittà.trim().length < 1 ||
-                        isNaN(dateee) ||
-                        dateString < "1870-01-01" ||
-                        enteredCF.trim().length < 16 ||
-                        enteredCF.trim().length > 16
-                        // || contattoCellulare.trim().length < 8
-                        // || !contattoEmail.includes('@')
-                    ) {
-                        if (enteredNome.trim().length < 1) {
-                            setValidNome(false);
-                            // console.log(validNome);
-                        } else {
-                            setValidNome(true);
-                        }
-                        if (enteredCognome.trim().length < 1) {
-                            setValidCognome(false);
-                        } else {
-                            setValidCognome(true);
-                        }
-                        if (enteredCittà.trim().length < 1) {
-                            setValidCittà(false);
-                        } else {
-                            setValidCittà(true);
-                        }
-                        if (isNaN(dateee)) {
-                            setValidData(false);
-                        } else if (dateString < "1870-01-01") {
-                            setValidData(false);
-                            setErrorMinData(true);
-                        } else {
-                            setValidData(true);
-                        }
-                        if (enteredCF.trim().length < 16 || enteredCF.trim().length > 16) {
-                            setValidCF(false);
-                        } else {
-                            setValidCF(true);
-                        }
-                        // if(contattoCellulare.trim().length < 8){
-                        //     setValidContattoCellulare(false);
-                        // }
-                        // else{
-                        //     setValidContattoCellulare(true);
-                        // }
-                        // if(!contattoEmail.includes('@')){
-                        //     setValidContattoEmail(false);
-                        // }
-                        // else{
-                        //     setValidContattoEmail(true);
-                        // }
-                    } else {
-                        var day = dateee.toLocaleString("it-IT", { day: "2-digit" });
-                        var month = dateee.toLocaleString("it-IT", { month: "2-digit" });
-                        var year = dateee.getFullYear();
-
-                        let dateString = `${year}-${month}-${day}`;
-                        setEnteredData(dateString);
-                        setStepAggiuntaPaziente((nextStep) => nextStep + 1);
-                    }
-                }
-                break;
-            case 2:
-                setStepAggiuntaPaziente((nextStep) => nextStep + 1);
-                break;
-        }
+        if (validateStep1()) setStepAggiuntaPaziente(2);
     };
 
-    const stepPrecedente = () => {
-        setStepAggiuntaPaziente((prevStep) => prevStep - 1);
-    };
-
-    const nomeChangeHandler = (event) => {
-        console.log(event.target.value);
-        setEnteredNome(event.target.value);
-        setValidNome(true);
-    };
-
-    const cognomeChangeHandler = (event) => {
-        console.log(event.target.value);
-        setEnteredCognome(event.target.value);
-        setValidCognome(true);
-    };
-
-    const cittàChangeHandler = (event) => {
-        console.log(event.target.value);
-        setEnteredCittà(event.target.value);
-        setValidCittà(true);
-    };
-
-    const dataNascitaChangeHandler = (event) => {
-        console.log(event.target.value);
-        setEnteredData(event.target.value);
-        setValidData(true);
-        setErrorMinData(false);
-    };
-
-    const CFChangeHandler = (event) => {
-        console.log(event.target.value);
-        setEnteredCF(event.target.value);
-        setValidCF(true);
-    };
-    const contattoEmailChangeHandler = (event) => {
-        console.log(event.target.value);
-        setContattoEmail(event.target.value);
-        setValidContattoEmail(true);
-    };
-    const contattoCellulareChangeHandler = (event) => {
-        console.log(event.target.value);
-        setContattoCellulare(event.target.value);
-        setValidContattoCellulare(true);
-    };
-
-    function stringaPrescrittaDaChangeHandler(event) {
-        setStringaPrescrittaDa(event.target.value);
-        setValidStringaPrescrittaDa(true);
-    }
-
-    const eliminaOggettoMedico = (id) => {
-        let arrayTemporaneo = [];
-
-        informazioniMediche.map((oggettoMedico) => {
-            if (oggettoMedico.terapiaID !== id) {
-                arrayTemporaneo.push(oggettoMedico);
+    const formSubmitHandler = async (withAccount = false) => {
+        if (withAccount) {
+            if (!enteredEmail.includes("@") || enteredPsw.length < 6) {
+                setErrors({ email: !enteredEmail.includes("@"), psw: enteredPsw.length < 6 });
+                return;
             }
-        });
-        setInformazioniMediche(arrayTemporaneo);
-    };
+        }
 
-    const emailChangeHandler = (event) => {
-        console.log(event.target.value);
-        setEnteredEmail(event.target.value);
-        setValidEmail(true);
-        setContattoEmail(event.target.value);
-    };
-
-    const pswChangeHandler = (event) => {
-        console.log(event.target.value);
-        setEnteredPsw(event.target.value);
-        setValidPsw(true);
-    };
-
-    async function formSubmitHandler() {
         const datiPaziente = {
             doct_UID: auth_ctx.utenteLoggatoUID,
             nome: enteredNome,
@@ -242,406 +61,120 @@ function AddPaziente(props) {
             city: enteredCittà,
             codiceFiscale: enteredCF.toUpperCase(),
             dataNascita: enteredData,
-            contattoEmail: contattoEmail,
-            contattoCellulare: contattoCellulare,
-            informazioniMediche: informazioniMediche,
+            contattoEmail: enteredEmail || "",
+            contattoCellulare: "", // Espandibile
+            informazioniMediche: []
         };
 
-        let pazienteSalvatoID;
-        pazienteSalvatoID = await getServerMgr().addPaziente(
-            datiPaziente.doct_UID,
-            datiPaziente.nome,
-            datiPaziente.cognome,
-            datiPaziente.city,
-            datiPaziente.codiceFiscale,
-            datiPaziente.dataNascita,
-            datiPaziente.contattoEmail,
-            datiPaziente.contattoCellulare,
-            datiPaziente.informazioniMediche
-        );
-        console.log("pazienteID--> " + pazienteSalvatoID.pazienteID);
+        try {
+            const res = await getServerMgr().addPaziente(
+                datiPaziente.doct_UID, datiPaziente.nome, datiPaziente.cognome,
+                datiPaziente.city, datiPaziente.codiceFiscale, datiPaziente.dataNascita,
+                datiPaziente.contattoEmail, datiPaziente.contattoCellulare, []
+            );
 
-        if (validEmail && validPsw && pazienteSalvatoID && modaleCreazioneAccount) {
-            // setModaleCREAZIONEUTENTE(true);
-            creaAccountPaziente(pazienteSalvatoID.pazienteID);
-        }
-
-        if (!modaleCreazioneAccount) {
+            if (withAccount && res.pazienteID) {
+                await getServerMgr().addAccount(enteredNome, enteredCognome, 2, enteredEmail, enteredPsw, res.pazienteID);
+                alert("Paziente e Account creati con successo!");
+            }
+            
             patients_ctx.nuovoPazienteHandler();
+        } catch (err) {
+            console.error(err);
         }
-    }
-
-    async function creaAccountPaziente(pazienteID) {
-        let result;
-        result = await getServerMgr()
-            .getAccount()
-            .then(console.log(result))
-            .catch((err) => {
-                console.error(err);
-            });
-
-        if (result !== undefined && result != null) {
-            for (var i = 0; i < result.length; i++) {
-                if (result[i].email === enteredEmail) {
-                    emailEsistente = true;
-                    setValidEmail(false);
-                    setErrorEmailMsg("Email già associata ad un account!");
-                    alert("Email già associata ad un account!");
-                    break;
-                } else {
-                    emailEsistente = false;
-                }
-            }
-            if (!emailEsistente) {
-                let result2;
-                result2 = await getServerMgr()
-                    .addAccount(
-                        enteredNome,
-                        enteredCognome,
-                        2,
-                        enteredEmail,
-                        enteredPsw,
-                        pazienteID
-                    )
-                    .then(alert("ACCOUNT CREATO!"))
-                    .catch((err) => {
-                        console.error(err);
-                    });
-
-                console.log(result2);
-                /* await getServerMgr().updatePatientWithProfileID(result2, pazienteID,enteredEmail)
-                        .catch((err) => {
-                            console.error(err);
-                        });
-        */
-                patients_ctx.nuovoPazienteHandler();
-            }
-        } else {
-            let result2;
-            result2 = await getServerMgr()
-                .addAccount(
-                    enteredNome,
-                    enteredCognome,
-                    2,
-                    enteredEmail,
-                    enteredPsw,
-                    pazienteID
-                )
-                .then(alert("ACCOUNT CREATO!"))
-                .catch((err) => {
-                    console.error(err);
-                });
-
-            console.log(result2);
-            /*
-                  await getServerMgr().updatePatientWithProfileID(result2, pazienteID,enteredEmail)
-                  .catch((err) => {
-                      console.error(err);
-                  });
-      */
-            patients_ctx.nuovoPazienteHandler();
-        }
-
-        return;
-    }
-
-    function hideForm(event) {
-        event.preventDefault();
-        props.hideFormNewPaziente();
-    }
-
-    function validateForm(bool_crea_account) {
-        let validate_email = true;
-        let validate_password = true;
-
-        if (!bool_crea_account) {
-            formSubmitHandler();
-        } else {
-            if (!enteredEmail.includes("@")) {
-                setValidEmail(false);
-                setErrorEmailMsg("Inserisci una email valida");
-                validate_email = false;
-            }
-            if (enteredPsw.trim().length <= 5) {
-                setValidPsw(false);
-                validate_password = false;
-            }
-            if (validate_email && validate_password) {
-                formSubmitHandler();
-            }
-        }
-    }
+    };
 
     return (
-      <div className={styles.center_form}>
-        {stepAggiuntaPaziente === 1 && (
-          <div className={styles.wrapper_step1}>
-            <h1 className={styles.title_form}>Anagrafica</h1>
-            <div className={styles.wrapper_vertical}>
-              <label
-                className={`${styles.label_style} ${
-                  !validNome ? styles.invalid : ""
-                }`}
-              >
-                Nome:
-              </label>
-              <input
-                className={`${styles.input_style} ${
-                  !validNome ? styles.invalid : ""
-                }`}
-                type="text"
-                value={enteredNome}
-                onChange={nomeChangeHandler}
-              ></input>
-              {!validNome && (
-                <div
-                  style={{ width: "100%", color: "red", textAlign: "center" }}
-                >
-                  Inserisci un nome valido
+        <div className={styles.mainContainer}>
+            <div className={styles.stepperCard}>
+                {/* Visual Progress Indicator */}
+                <div className={styles.progressHeader}>
+                    <div className={`${styles.step} ${stepAggiuntaPaziente >= 1 ? styles.active : ""}`}>
+                        <span className={styles.stepNum}>1</span>
+                        <span className={styles.stepLabel}>Anagrafica</span>
+                    </div>
+                    <div className={styles.line}></div>
+                    <div className={`${styles.step} ${stepAggiuntaPaziente >= 2 ? styles.active : ""}`}>
+                        <span className={styles.stepNum}>2</span>
+                        <span className={styles.stepLabel}>Account</span>
+                    </div>
                 </div>
-              )}
 
-              <label
-                className={`${styles.label_style} ${
-                  !validCognome ? styles.invalid : ""
-                }`}
-              >
-                Cognome:
-              </label>
-              <input
-                className={`${styles.input_style} ${
-                  !validCognome ? styles.invalid : ""
-                }`}
-                type="text"
-                value={enteredCognome}
-                onChange={cognomeChangeHandler}
-              ></input>
-              {!validCognome && (
-                <div
-                  style={{ width: "100%", color: "red", textAlign: "center" }}
-                >
-                  Inserisci un cognome valido
-                </div>
-              )}
+                {stepAggiuntaPaziente === 1 ? (
+                    <div className={styles.formSection}>
+                        <h2 className={styles.sectionTitle}>Dati Personali</h2>
+                        <div className={styles.gridFields}>
+                            <div className={styles.inputGroup}>
+                                <label>Nome</label>
+                                <input type="text" value={enteredNome} onChange={(e) => setEnteredNome(e.target.value)} className={errors.nome ? styles.invalid : ""} />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label>Cognome</label>
+                                <input type="text" value={enteredCognome} onChange={(e) => setEnteredCognome(e.target.value)} className={errors.cognome ? styles.invalid : ""} />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label>Città di Nascita</label>
+                                <input type="text" value={enteredCittà} onChange={(e) => setEnteredCittà(e.target.value)} className={errors.citta ? styles.invalid : ""} />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label>Data di Nascita</label>
+                                <input type="date" value={enteredData} onChange={(e) => setEnteredData(e.target.value)} className={errors.data ? styles.invalid : ""} />
+                            </div>
+                            <div className={`${styles.inputGroup} ${styles.fullWidth}`}>
+                                <label>Codice Fiscale</label>
+                                <input type="text" value={enteredCF} onChange={(e) => setEnteredCF(e.target.value.toUpperCase())} maxLength={16} className={errors.cf ? styles.invalid : ""} />
+                                {errors.cf && <small className={styles.errorText}>{errors.cf}</small>}
+                            </div>
+                        </div>
 
-              <label
-                className={`${styles.label_style} ${
-                  !validCittà ? styles.invalid : ""
-                }`}
-              >
-                Città di nascita:
-              </label>
-              <input
-                className={`${styles.input_style} ${
-                  !validCittà ? styles.invalid : ""
-                }`}
-                type="text"
-                value={enteredCittà}
-                onChange={cittàChangeHandler}
-              ></input>
-              {!validCittà && (
-                <div
-                  style={{ width: "100%", color: "red", textAlign: "center" }}
-                >
-                  Inserisci una città esistente
-                </div>
-              )}
-
-              <label
-                className={`${styles.label_style} ${
-                  !validData ? styles.invalid : ""
-                }`}
-              >
-                Data di nascita:
-              </label>
-              <input
-                className={`${styles.input_style} ${
-                  !validData ? styles.invalid : ""
-                }`}
-                type="date"
-                min={"1870-01-01"}
-                max="31-31-2400"
-                value={enteredData}
-                onChange={dataNascitaChangeHandler}
-              ></input>
-              {!validData && (
-                <div
-                  style={{ width: "100%", color: "red", textAlign: "center" }}
-                >
-                  Inserisci una data valida
-                </div>
-              )}
-              {errorMinData && (
-                <div
-                  style={{ width: "100%", color: "red", textAlign: "center" }}
-                >
-                  Non puoi inserire una data antecedente al 01-01-1870
-                </div>
-              )}
-
-              <label
-                className={`${styles.label_style} ${
-                  !validCF ? styles.invalid : ""
-                }`}
-              >
-                Codice Fiscale:
-              </label>
-              <input
-                className={`${styles.input_style} ${
-                  !validCF ? styles.invalid : ""
-                }`}
-                type="text"
-                value={enteredCF}
-                onChange={CFChangeHandler}
-              ></input>
-              {!validCF && (
-                <div
-                  style={{ width: "100%", color: "red", textAlign: "center" }}
-                >
-                  Il codice fiscale deve contenere 16 caratteri
-                </div>
-              )}
+                        <div className={styles.actions}>
+                            <GenericButton onClick={props.hideFormNewPaziente} buttonText="Annulla" red_styling generic_button />
+                            <GenericButton onClick={stepSuccessivo} buttonText="Continua" generic_button />
+                        </div>
+                    </div>
+                ) : (
+                    <div className={styles.formSection}>
+                        <div className={styles.accountChoice}>
+                            <div className={styles.iconCircle}>🔑</div>
+                            <h2 className={styles.sectionTitle}>Accesso Paziente</h2>
+                            <p className={styles.description}>
+                                Vuoi creare un account per permettere al paziente di svolgere gli esercizi da casa?
+                            </p>
+                            
+                            <div className={styles.choiceButtons}>
+                                <GenericButton onClick={() => setModaleCreazioneAccount(true)} buttonText="Sì, Crea Account ora" generic_button />
+                                <GenericButton onClick={() => formSubmitHandler(false)} buttonText="No, Salva solo Anagrafica" generic_button />
+                            </div>
+                            <button className={styles.backLink} onClick={() => setStepAggiuntaPaziente(1)}>Torna all'anagrafica</button>
+                        </div>
+                    </div>
+                )}
             </div>
 
-            <div className={styles.horizontal}>
-              <GenericButton
-                onClick={hideForm}
-                generic_button={true}
-                red_styling
-                buttonText="Indietro"
-              ></GenericButton>
-              <GenericButton
-                onClick={(event) => {
-                  event.preventDefault();
-                  stepSuccessivo();
-                }}
-                generic_button={true}
-                buttonText="Avanti"
-              ></GenericButton>
-            </div>
-          </div>
-        )}
-
-        {stepAggiuntaPaziente === 2 && (
-          <div className={styles.wrapper_step1}>
-            <div className={styles.wrapper_vertical}>
-              {/* <section className={styles.section_style_FORM}> */}
-              <h3 className={styles.title_form}>Account per il paziente</h3>
-              <h5 className="intestazione">
-                Se vuoi creare subito un account per il paziente, clicca sul
-                pulsante 'Crea account' ed inserisci i dati richiesti.
-              </h5>
-              <div style={{ width: "100%" }} className={styles.horizontal}>
-                <GenericButton
-                  onClick={() => {
-                    setModaleCreazioneAccount(true);
-                  }}
-                  generic_button={true}
-                  buttonText="Crea account"
-                ></GenericButton>
-                <GenericButton
-                  onClick={stepPrecedente}
-                  generic_button={true}
-                  red_styling
-                  buttonText="Indietro"
-                ></GenericButton>
-              </div>
-
-              {/* <h5 className="intestazione">Altrimenti puoi salvare subito il paziente e creare un account successivamente andando sulla scheda del paziente</h5> */}
-
-              <Modal centered show={modaleCreazioneAccount}>
-                <Modal.Header style={{ fontWeight: "bold" }}>
-                  Creazione account paziente
+            {/* Modale Creazione Account */}
+            <Modal centered show={modaleCreazioneAccount} onHide={() => setModaleCreazioneAccount(false)} contentClassName={styles.customModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Nuove Credenziali</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                  <label
-                    className={`${styles.label_style} ${
-                      !validEmail ? styles.invalid : ""
-                    }`}
-                  >
-                    Email:
-                  </label>
-                  <input
-                    className={`${styles.input_style} ${
-                      !validEmail ? styles.invalid : ""
-                    }`}
-                    type="email"
-                    value={enteredEmail}
-                    onChange={emailChangeHandler}
-                  ></input>
-                  {!validEmail && (
-                    <div
-                      style={{
-                        width: "100%",
-                        color: "red",
-                        textAlign: "center",
-                      }}
-                    >
-                      {errorEmailMsg}
+                    <div className={styles.inputGroup}>
+                        <label>Email Accesso</label>
+                        <input type="email" value={enteredEmail} onChange={(e) => setEnteredEmail(e.target.value)} placeholder="esempio@mail.it" />
                     </div>
-                  )}
-
-                  <label
-                    className={`${styles.label_style} ${
-                      !validPsw ? styles.invalid : ""
-                    }`}
-                  >
-                    Password:
-                  </label>
-                  <input
-                    className={`${styles.input_style} ${
-                      !validPsw ? styles.invalid : ""
-                    }`}
-                    type="text"
-                    value={enteredPsw}
-                    onChange={pswChangeHandler}
-                  ></input>
-                  {!validPsw && (
-                    <div
-                      style={{
-                        width: "100%",
-                        color: "red",
-                        textAlign: "center",
-                      }}
-                    >
-                      La password deve contenere minimo 6 caratteri
+                    <div className={styles.inputGroup}>
+                        <label>Password (min. 6 car.)</label>
+                        <input type="password" value={enteredPsw} onChange={(e) => setEnteredPsw(e.target.value)} placeholder="******" />
                     </div>
-                  )}
-                  <p className={styles.paragraph_style}>
-                    <b>Attenzione! </b>
-                    Queste credenziali serviranno al paziente per potersi
-                    collegare alla piattaforma e svolgere attività. Se inserite,
-                    verrà creato un profilo per il paziente
-                  </p>
+                    <p className={styles.warningNote}>
+                        <strong>Nota:</strong> Queste credenziali saranno necessarie al paziente per il login tramite App o QR Code.
+                    </p>
                 </Modal.Body>
                 <Modal.Footer>
-                  <GenericButton
-                    onClick={() => {
-                      validateForm(true);
-                    }}
-                    generic_button={true}
-                    buttonText="Salva paziente"
-                  ></GenericButton>
-                  <GenericButton
-                    onClick={() => {
-                      setModaleCreazioneAccount(false);
-                    }}
-                    generic_button={true}
-                    red_styling
-                    buttonText="Annulla"
-                  ></GenericButton>
+                    <GenericButton onClick={() => formSubmitHandler(true)} buttonText="Crea e Salva Tutto" generic_button />
                 </Modal.Footer>
-              </Modal>
-
-              <p className={styles.paragraph_style}></p>
-
-              {/* </section> */}
-            </div>
-          </div>
-        )}
-
-        {/* <hr className={styles.horizontal_line}></hr> */}
-      </div>
+            </Modal>
+        </div>
     );
 }
+
 export default AddPaziente;

@@ -61,6 +61,7 @@
     padding: 12px 25px !important;
     border-radius: 12px 12px 0 0 !important;
     transition: all 0.3s !important;
+    width: 200px;
 }
 
 :global(.nav-link.active) {

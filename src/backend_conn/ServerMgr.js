@@ -31,7 +31,7 @@ function initServerMgr(cb) {
         })
 
         try{
-            const response = await fetch("http://localhost/Remind/php_config/connection.php", {
+            const response = await fetch("http://localhost/revive/php_config/connection.php", {
                 method: "POST",
                 mode: "cors",
                 headers: {

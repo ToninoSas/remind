@@ -51,6 +51,8 @@ function SchedaPaziente(props) {
         );
         const updatedCreds = await getServerMgr().getPatientCredentials(newId);
         setCredentials(updatedCreds);
+        console.log("Credenziali paziente: ");
+        console.log(updatedCreds);
         setCreateCredentials(false);
         alert("Account creato con successo!");
       } catch (err) {
@@ -137,7 +139,7 @@ function SchedaPaziente(props) {
 
           <Tab eventKey="GIOCHI" title="🎮 Giochi">
             <div className={styles.tab_content}>
-              {props.listaGiochi?.length === 0 ? (
+              {(props.listaGiochi==null || props.listaGiochi?.length === 0) ? (
                 <p className={styles.no_data_msg}>
                   Nessun gioco assegnato attualmente.
                 </p>

@@ -1,92 +1,133 @@
-.vertical{
+.stats_container {
     width: 100%;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    gap: 25px;
+}
+
+/* Filtro */
+.filter_header {
+    display: flex;
     align-items: center;
-    margin-top: 5px;
+    justify-content: center;
+    gap: 15px;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 
-.subtitle{
-    width: 100%;
-    text-align: center;
-    font-size: 18px;
-    margin: 0;
+.filter_label {
+    font-weight: 700;
+    color: #3A6F6D;
 }
 
-.wrapper_statistiche{
-    /* border: 2px solid #163172; */
+.select_modern {
+    padding: 8px 15px;
     border-radius: 10px;
-    background-image: linear-gradient(#b1d9fc, #dfe7ee);
-    padding: 20px;
-    width: 80%;
-    margin: 15px;
-    display: flex;
-    flex-direction: column;
-    /* box-shadow: 2px 4px 10px 1px#163172; */
+    border: 2px solid #E6F2ED;
+    color: #163172;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.3s;
 }
 
-.select_style{
-    margin: 5px;
-    width: 50%;
-    height: 30px;
-    border-radius: 5px;
-    border: 2px solid #1E56A0;
+.select_modern:focus {
+    border-color: #62D2AD;
+}
+
+/* KPI Grid */
+.kpi_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.kpi_card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid #eef6f3;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+}
+
+.kpi_icon {
+    font-size: 24px;
+    background: #f0f9f6;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.kpi_data {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi_value {
+    font-size: 22px;
+    font-weight: 800;
+    color: #163172;
+    line-height: 1;
+}
+
+.kpi_title {
+    font-size: 13px;
+    color: #7a8d8c;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.kpi_card.success .kpi_icon { background: #eefaf3; }
+.kpi_card.danger .kpi_icon { background: #fff5f5; }
+
+/* Visual Card */
+.visual_card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #eef6f3;
+    box-shadow: 0 10px 30px rgba(58, 111, 109, 0.08);
+}
+
+.card_title {
     font-size: 18px;
+    color: #3A6F6D;
+    margin-bottom: 25px;
+    font-weight: 700;
     text-align: center;
 }
 
-.select_style:focus{
-    border: 2px solid #163172;
-    outline: none;
+.progress_section {
+    margin-bottom: 25px;
 }
 
-.wrapper_barre{
+.progress_info {
     display: flex;
-    flex-direction: column;
-    /* flex-direction: row; */
-    align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 15px;
 }
 
-.wrapper_numeri{
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+.perc_text_green { color: #28a745; font-size: 18px; font-weight: 800; }
+.perc_text_red { color: #dc3545; font-size: 18px; font-weight: 800; }
+
+.custom_bar {
+    height: 12px !important;
+    border-radius: 10px !important;
+    background-color: #f0f4f2 !important;
 }
 
-.barra{
-    width: 400px;
-    height: 20px;
-    border: 3px solid #163172;
-    border-radius: 5px;
-    margin: 5px;
-    display: flex;
-    flex-direction: row;
-}
-
-.riempimento_barra_corrette{
-    display: flex;
-    flex-direction: row;
-    width: 0%;
-    /* height: 0%; */
-    background-color: green;
-}
-.riempimento_barra_sbagliate{
-    display: flex;
-    flex-direction: row;
-    width: 0%;
-    background-color: #ff5a5a;
-}
-
-.content_style{
-    width: 90%;
-    color: #163172;
-}
-
-@media screen and (max-width: 500px) {
-    .wrapper_statistiche{
-        width: 95%;
-    }
+/* Mobile */
+@media (max-width: 768px) {
+    .kpi_grid { grid-template-columns: 1fr; }
+    .filter_header { flex-direction: column; text-align: center; }
 }

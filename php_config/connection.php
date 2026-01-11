@@ -1,6 +1,8 @@
 <?php
 
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 	header("Access-Control-Allow-Origin: *");
 	header("Access-Control-Allow-Credentials: true");
@@ -8,6 +10,12 @@
 	header("Access-Control-Allow-Headers: Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
 	
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    // Se è una richiesta OPTIONS, termina qui con successo
+    http_response_code(200);
+    exit;
+}
 
 	$request_service = "";
     if(isset($_POST)) {
@@ -199,7 +207,7 @@
 		$servername = "localhost";
         $username = "root";
         $password = "";
-        $database = "remind";
+        $database = "revive";
         
         $o_conn = new mysqli($servername, $username, $password, $database);
         if ($o_conn -> connect_errno) {
@@ -258,7 +266,7 @@
     
     
     function getAccount($i_conn) {
-    	$result = $i_conn->query("SELECT accounts.UID, accounts.nome, accounts.cognome, accounts.email, accounts.password, types.tipoAccount FROM `accounts` JOIN accountsTypes AS types ON accounts.titolo = types.id;");
+    	$result = $i_conn->query("SELECT accounts.UID, accounts.nome, accounts.cognome, accounts.email, accounts.password, types.tipoAccount FROM `accounts` JOIN accountstypes AS types ON accounts.titolo = types.id;");
         return $result;
     }
 
@@ -431,7 +439,7 @@
     
 
    
-    $insertNewBox = $i_conn->prepare("INSERT INTO `BoxDeiRicordi` (`id_paziente`, `nome`, `cognome`, `citta`, `eta`) VALUES (?, ?, ?, ?, ?)");
+    $insertNewBox = $i_conn->prepare("INSERT INTO `boxdeiricordi` (`id_paziente`, `nome`, `cognome`, `citta`, `eta`) VALUES (?, ?, ?, ?, ?)");
     
    
     $insertNewBox->bind_param("isssi", $id_paziente, $nome, $cognome, $citta, $eta); 
