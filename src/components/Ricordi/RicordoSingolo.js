@@ -7,34 +7,34 @@ import L from 'leaflet';
 import styles from "./RicordoSingolo.module.css";
 import 'leaflet-fullscreen';
 import { getServerMgr } from "../../backend_conn/ServerMgr.js";
+import GenericButton from "../UI/GenericButton";
 
+// Fix per l'icona del marker
+const markerIcon = new L.Icon({
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
 
 function FullscreenControl() {
     const map = useMap();
-
     useEffect(() => {
-        L.control.fullscreen({ position: 'topright' }).addTo(map);
+        const fsControl = L.control.fullscreen({ position: 'topright' });
+        fsControl.addTo(map);
+        return () => fsControl.remove();
     }, [map]);
-
     return null;
 }
 
-function RicordoSingolo({ titolo, tipo, multimedia, descrizione, idRicordo, latitudine, longitudine, onDelete,boxID }) {
+function RicordoSingolo({ titolo, tipo, multimedia, descrizione, idRicordo, latitudine, longitudine, boxID }) {
     const navigate = useNavigate();
-    const ricordo = {
-        idRicordo,
-        titolo,
-        tipo,
-        descrizione,
-        latitudine,
-        longitudine,
-        multimedia
-    };
+    
+    const ricordo = { idRicordo, titolo, tipo, descrizione, latitudine, longitudine, multimedia };
+    
     const file = tipo !== "luogo" && multimedia?.length > 0 ? multimedia[0] : null;
     const fileUrl = file ? `/immagini/${file.url.split('/').pop()}` : null;
     const fileType = file ? file.tipo : null;
-
-    console.log("Latitudine:", latitudine, "Longitudine:", longitudine);
 
     const handleViewDetails = () => {
         navigate(`/box-dei-ricordi/dettagliBox/dettagli-ricordo/RicordoSingolo/visualizza-ricordo/${idRicordo}`);
@@ -42,94 +42,84 @@ function RicordoSingolo({ titolo, tipo, multimedia, descrizione, idRicordo, lati
 
     const handleEdit = () => {
         navigate(`/box-dei-ricordi/dettagliBox/dettagli-ricordo/RicordoSingolo/modifica-ricordo/${idRicordo}`, {
-            state: { ricordo,boxID }  
+            state: { ricordo, boxID }  
         });
     };
-    
 
     const handleDelete = async () => {
         if (window.confirm("Sei sicuro di voler eliminare questo ricordo?")) {
             try {
-               
                 const response = await getServerMgr().deleteRicordoById(idRicordo);
-                
-                
                 if (response.success) {
                     alert("Eliminazione avvenuta con successo!");
-                   window.location.reload();
+                    window.location.reload();
                 } else {
                     alert("Errore nell'eliminazione del ricordo.");
                 }
             } catch (error) {
-                console.error("Errore nell'eliminazione del ricordo:", error);
-                alert("Si è verificato un errore, riprova.");
+                console.error("Errore:", error);
             }
         }
     };
-    
-    
 
     return (
-        <div className={styles.ricordoItem}>
-            <h3>{titolo}</h3>
-            <p><strong>Tipo:</strong> {tipo}</p>
-            {multimedia?.length > 1 && (
-    <p className={styles.multimediaHint}>
-        📂 Più file disponibili. Clicca su <strong>Visualizza</strong> per vederli tutti.
-    </p>
-)}
-            <div className={styles.mediaContainer}>
+        <div className={styles.card_wrapper}>
+            <div className={styles.card_header}>
+                <div className={styles.type_badge}>
+                    {tipo === 'immagine' && '🖼️'}
+                    {tipo === 'video' && '🎥'}
+                    {tipo === 'audio' && '🎵'}
+                    {tipo === 'luogo' && '📍'}
+                    <span>{tipo}</span>
+                </div>
+                <h3 className={styles.title}>{titolo}</h3>
+            </div>
+
+            <div className={styles.media_section}>
                 {tipo !== "luogo" && file ? (
-                    <>
-                        {fileType.includes("immagine") && (
-                            <img src={fileUrl} alt={titolo} className={styles.previewImage} />
-                        )}
+                    <div className={styles.media_display}>
+                        {fileType.includes("immagine") && <img src={fileUrl} alt={titolo} className={styles.img_fill} />}
                         {fileType.includes("video") && (
-                            <video controls className={styles.previewVideo}>
+                            <video controls className={styles.video_fill}>
                                 <source src={fileUrl} type="video/mp4" />
-                                Il tuo browser non supporta il video.
                             </video>
                         )}
                         {fileType.includes("audio") && (
-                            <audio controls className={styles.previewAudio}>
-                                <source src={fileUrl} type="audio/mpeg" />
-                                Il tuo browser non supporta l'audio.
-                            </audio>
+                            <div className={styles.audio_wrapper}>
+                                <audio controls src={fileUrl} className={styles.audio_player} />
+                            </div>
                         )}
-                    </>
+                    </div>
                 ) : (
                     tipo === "luogo" && latitudine && longitudine && (
-                        <div className={styles.mapContainer}>
-                            <h4>Posizione del Ricordo</h4>
-                            <MapContainer 
-                                center={[latitudine, longitudine]} 
-                                zoom={13}
-                                className={styles.leafletMap}
-                            >
+                        <div className={styles.map_wrapper}>
+                            <MapContainer center={[latitudine, longitudine]} zoom={13} className={styles.map_view}>
                                 <FullscreenControl /> 
-                                <TileLayer
-                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                />
-                                <Marker position={[latitudine, longitudine]}  icon={new L.Icon({
-                                    iconUrl: '/immagini/marker-icon-2x.png',  
-                                    iconSize: [30, 30],                   
-                                    iconAnchor: [16, 32],                
-                                    popupAnchor: [0, -32]                 
-                                  })}>
-                                    <Popup>Posizione del ricordo</Popup>
-                                </Marker>
+                                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                <Marker position={[latitudine, longitudine]} icon={markerIcon} />
                             </MapContainer>
                         </div>
                     )
                 )}
             </div>
 
-            <p>{descrizione}</p>
+            <div className={styles.card_body}>
+                <p className={styles.description}>{descrizione}</p>
+                {multimedia?.length > 1 && (
+                    <div className={styles.extra_info}>
+                        📂 +{multimedia.length - 1} altri file disponibili
+                    </div>
+                )}
+            </div>
 
-            <div className={styles.buttonContainer}>
-                <button className={styles.viewButton} onClick={handleViewDetails}>Visualizza</button>
-                <button className={styles.editButton} onClick={handleEdit}>Modifica</button>
-                <button className={styles.deleteButton} onClick={handleDelete}>Elimina</button>
+            <div className={styles.card_actions}>
+                <div className={styles.main_btn}>
+                    <GenericButton onClick={handleViewDetails} buttonText="Visualizza" generic_button />
+                </div>
+                <div className={styles.tool_btns}>
+                    <button className={styles.btn_edit} onClick={handleEdit} title="Modifica">📝</button>
+                    <button className={styles.btn_delete} onClick={handleDelete} title="Elimina">🗑️</button>
+                </div>
             </div>
         </div>
     );

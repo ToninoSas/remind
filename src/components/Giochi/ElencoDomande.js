@@ -1,282 +1,122 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 import GameContext from "../../context/game-context";
 import styles from "./ElencoDomande.module.css";
 import AuthContext from "../../context/auth-context";
 import GenericButton from "../UI/GenericButton";
 import { Link } from "react-router-dom";
 
-var COUNT_DOMANDE = 0;
-let domande_esistenti = 0;
-
-function ElencoDomande(props){
+function ElencoDomande(props) {
     const game_ctx = useContext(GameContext);
     const auth_ctx = useContext(AuthContext);
 
-    const [questionsList, setQuestionsList] = useState(game_ctx.domande);
-  
-    const [llll, setllll] = useState([...game_ctx.domandeDaModificare]);
-    const [numeroDomandeSelezionate, setNumeroDomandeSelezionate] = useState(0);
-
-  
+    // Gestione stato locale per gli ID selezionati
+    const [selectedIds, setSelectedIds] = useState([...game_ctx.domandeDaModificare]);
 
     const websiteUrl = "/immagini/";
 
-    //------- CREA QUI L'ARRAY CHE CONTIENE LE DOMANDE DENTRO verifyIsChecked
+    // Reset se cambia il tipo gioco (a meno che non sia specificato diversamente)
     useEffect(() => {
-        if(!props.booleanForNotReset){
-            console.log("DOMANDE PRE")
-            console.log(llll)
-            llll.splice(0);
-            console.log("DOMANDE POST")
-            console.log(llll)
-            COUNT_DOMANDE = 0;
-            setNumeroDomandeSelezionate(COUNT_DOMANDE);
-            domande_esistenti = 0;
-            props.domandeNuovoGioco(llll);
+        if (!props.booleanForNotReset) {
+            setSelectedIds([]);
+            props.domandeNuovoGioco([]);
         }
-    }, [props.tipoGioco])
-    useEffect(() => {
-        // setllll([...game_ctx.domandeDaModificare]);
-        setNumeroDomandeSelezionate(game_ctx.domandeDaModificare.length);
-        COUNT_DOMANDE = game_ctx.domandeDaModificare.length;
-        console.log("Appena entrato queste sono le domande")
-        console.log(llll);
-        props.domandeNuovoGioco(llll);
+    }, [props.tipoGioco]);
 
-    }, [game_ctx.domandeDaModificare.length]);
+    // Filtriamo le domande in base al tipo gioco richiesto
+    const filteredQuestions = useMemo(() => {
+        return game_ctx.domande?.filter(q => q.tipoGioco === props.tipoGioco) || [];
+    }, [game_ctx.domande, props.tipoGioco]);
 
+    const toggleDomanda = (id) => {
+        setSelectedIds(prev => {
+            const updated = prev.includes(id) 
+                ? prev.filter(item => item !== id) 
+                : [...prev, id];
+            
+            // Notifichiamo il componente padre (AddGioco)
+            props.domandeNuovoGioco(updated);
+            return updated;
+        });
+    };
 
-    
-
-    function changingCategoryMakesQuestionsReset(){
-        llll.splice(0);
-        COUNT_DOMANDE = 0;
-        setNumeroDomandeSelezionate(COUNT_DOMANDE);
-        props.domandeNuovoGioco(llll);
-    }
-
-    function verifyIsChecked(event, domanda){
-        console.log(domanda);
-        if (event.target.checked) {
-            console.log('✅ Checkbox is checked');
-            COUNT_DOMANDE++;
-            llll.unshift(
-                domanda.ID,
-                // categoria: domanda.categoria,
-                // domanda: domanda.domanda,
-                // rispCorrettaN1: domanda.rispCorrettaN1,
-                // rispCorrettaN2: domanda.rispCorrettaN2,
-                // rispCorrettaN3: domanda.rispCorrettaN3,
-                // rispCorrettaN4: domanda.rispCorrettaN4,
-                // rispSbagliataN1: domanda.rispSbagliataN1,
-                // rispSbagliataN2: domanda.rispSbagliataN2,
-                // rispSbagliataN3: domanda.rispSbagliataN3,
-                // rispSbagliataN4: domanda.rispSbagliataN4
-            );
+    const renderMedia = (question) => {
+        const src = websiteUrl + question.immagine;
+        switch (props.tipoGioco) {
+            case "QUIZ CON IMMAGINI": return <img className={styles.media_prev} src={src} alt="Preview" />;
+            case "QUIZ CON SUONI": return <audio className={styles.audio_prev} controls src={src} />;
+            case "QUIZ CON VIDEO": return <video className={styles.video_prev} controls src={src} />;
+            default: return null;
         }
-        else{
-            console.log('⛔️ Checkbox is NOT checked');
-            COUNT_DOMANDE--;
-            for(var i=0; i < llll.length; i++){
-                if(domanda.ID === llll[i]){
-                    llll.splice(i, 1);
-                    break;
-                }
-            }
-        }
-
-        // console.log(llll.question);
-        console.log(llll);
-        setNumeroDomandeSelezionate(COUNT_DOMANDE);
-        props.domandeNuovoGioco(llll);
-    }
-
-   
-        
-    
-
-    function recuperaTutteLeDomande(singleQuestion) {
-      // Verifichiamo se l'ID della domanda è presente nell'elenco delle selezionate
-      // Questo restituisce sempre true o false, evitando il passaggio undefined -> defined
-      const isChecked = llll.includes(singleQuestion.ID);
-
-      if (singleQuestion.tipoGioco === props.tipoGioco) {
-        domande_esistenti += 1;
-
-        // Definiamo l'input in modo che sia SEMPRE controllato
-        const checkboxInputChecked = (
-          <input
-            className={styles.checkbox_style}
-            type="checkbox"
-            checked={isChecked} // Prop sempre presente
-            onChange={(event) => {
-              verifyIsChecked(event, singleQuestion);
-            }}
-          />
-        );
-
-        return (
-          <li className={styles.LIST_ITEM_STYLE} key={singleQuestion.ID}>
-            {props.tipoGioco === "QUIZ" && (
-              <div className={styles.flex_list_container}>
-                <h5 className={styles.subtitle_style}>Domanda:</h5>
-                <p className={styles.question_style}>
-                  {singleQuestion.domanda}
-                </p>
-              </div>
-            )}
-
-            {props.tipoGioco === "QUIZ CON IMMAGINI" && (
-              <div className={styles.flex_list_container}>
-                <h5 className={styles.subtitle_style}>Immagine:</h5>
-                <img
-                  className={styles.preview_image}
-                  src={websiteUrl.concat(singleQuestion.immagine)}
-                  alt="anteprima"
-                />
-                <h4 className={styles.subtitle_style}>Domanda:</h4>
-                <p className={styles.question_style}>
-                  {singleQuestion.domanda}
-                </p>
-              </div>
-            )}
-
-            {props.tipoGioco === "QUIZ CON SUONI" && (
-              <div className={styles.flex_list_container}>
-                <h5 className={styles.subtitle_style}>Audio:</h5>
-                <audio
-                  controls={true}
-                  src={websiteUrl.concat(singleQuestion.immagine)}
-                ></audio>
-                <h4 className={styles.subtitle_style}>Domanda:</h4>
-                <p className={styles.question_style}>
-                  {singleQuestion.domanda}
-                </p>
-              </div>
-            )}
-
-            {props.tipoGioco === "QUIZ CON VIDEO" && (
-              <div className={styles.flex_list_container}>
-                <h5 className={styles.subtitle_style}>Video:</h5>
-                <video controls width="320" height="240">
-                  <source
-                    src={websiteUrl.concat(singleQuestion.immagine)}
-                    type="video/mp4"
-                  />
-                </video>
-                <h4 className={styles.subtitle_style}>Domanda:</h4>
-                <p className={styles.question_style}>
-                  {singleQuestion.domanda}
-                </p>
-              </div>
-            )}
-
-            {props.tipoGioco === "COMPLETA LA PAROLA" && (
-              <>
-                <div className={styles.flex_list_container}>
-                  <h5 className={styles.subtitle_style}>
-                    Parola da indovinare:
-                  </h5>
-                  <p className={styles.question_style}>
-                    {singleQuestion.domanda}
-                  </p>
-                </div>
-                <div className={styles.flex_list_container}>
-                  <h4 className={styles.subtitle_style}>Aiuto:</h4>
-                  <p className={styles.question_style}>
-                    {singleQuestion.suggerimento}
-                  </p>
-                </div>
-              </>
-            )}
-
-            {(props.tipoGioco === "QUIZ" ||
-              props.tipoGioco === "QUIZ CON IMMAGINI" ||
-              props.tipoGioco === "QUIZ CON SUONI" ||
-              props.tipoGioco === "QUIZ CON VIDEO") && (
-              <div className={styles.flex_list_container}>
-                <h5 className={styles.subtitle_style}>Risposte:</h5>
-                <div className={styles.separa_corrette_sbagliate}>
-                  <span className={styles.buttons_space}>
-                    <p style={{ marginBottom: "0" }}>CORRETTA</p>
-                    <p className={styles.correct_answ}>
-                      {singleQuestion.rispCorrettaN1}
-                    </p>
-                    {singleQuestion.rispCorrettaN2?.trim().length > 0 && (
-                      <p className={styles.correct_answ}>
-                        {singleQuestion.rispCorrettaN2}
-                      </p>
-                    )}
-                    {singleQuestion.rispCorrettaN3?.trim().length > 0 && (
-                      <p className={styles.correct_answ}>
-                        {singleQuestion.rispCorrettaN3}
-                      </p>
-                    )}
-                    {singleQuestion.rispCorrettaN4?.trim().length > 0 && (
-                      <p className={styles.correct_answ}>
-                        {singleQuestion.rispCorrettaN4}
-                      </p>
-                    )}
-                  </span>
-
-                  <span className={styles.buttons_space}>
-                    <p style={{ marginBottom: "0" }}>SBAGLIATE</p>
-                    <p className={styles.wrong_answ}>
-                      {singleQuestion.rispSbagliataN1}
-                    </p>
-                    {singleQuestion.rispSbagliataN2?.trim().length > 0 && (
-                      <p className={styles.wrong_answ}>
-                        {singleQuestion.rispSbagliataN2}
-                      </p>
-                    )}
-                    {singleQuestion.rispSbagliataN3?.trim().length > 0 && (
-                      <p className={styles.wrong_answ}>
-                        {singleQuestion.rispSbagliataN3}
-                      </p>
-                    )}
-                    {singleQuestion.rispSbagliataN4?.trim().length > 0 && (
-                      <p className={styles.wrong_answ}>
-                        {singleQuestion.rispSbagliataN4}
-                      </p>
-                    )}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            <div className={styles.flex_list_container}>
-              <h5 className={styles.subtitle_style}>Inserisci nel quiz:</h5>
-              {checkboxInputChecked}
-            </div>
-          </li>
-        );
-      } else {
-        return null;
-      }
-    }
+    };
 
     return (
-        <>
-            <h5>Seleziona le domande per il gioco:</h5>
-            <div className={styles.wrapper_generico}>
-                <h3 className={styles.domande_disponibili}>{"DOMANDE SELEZIONATE: " + numeroDomandeSelezionate}</h3>
-
-                <Link to={`/domande/creaDomanda/${auth_ctx.utenteLoggatoUID}`} style={{textDecoration: "none"}}>
-                    <GenericButton
-                        buttonText={"Crea una domanda"}
-                        generic_button
-                    ></GenericButton>
-                </Link>
+        <div className={styles.container}>
+            <header className={styles.list_header}>
+                <div className={styles.counter_badge}>
+                    <span>Domande Selezionate:</span>
+                    <strong>{selectedIds.length}</strong>
+                </div>
                 
-               
-            </div>
-            
-            <ul className={styles.wrapper_lista_domande}>
-                {questionsList.map(recuperaTutteLeDomande)}
-                {domande_esistenti === 0 && <p className={styles.crea_una_domanda}>Non ci sono domande salvate per questo gioco. Usa il pulsante qui sopra per creare una domanda</p>}
-            </ul>
-            
-        </>
+                <Link to={`/domande/creaDomanda/${auth_ctx.utenteLoggatoUID}`} className={styles.no_deco}>
+                    <GenericButton buttonText="＋ Crea Nuova Domanda" generic_button />
+                </Link>
+            </header>
+
+            {filteredQuestions.length === 0 ? (
+                <div className={styles.empty_msg}>
+                    <p>Non ci sono domande salvate per questa categoria.</p>
+                </div>
+            ) : (
+                <div className={styles.questions_grid}>
+                    {filteredQuestions.map((q) => {
+                        const isChecked = selectedIds.includes(q.ID);
+                        return (
+                            <div 
+                                key={q.ID} 
+                                className={`${styles.question_card} ${isChecked ? styles.card_selected : ""}`}
+                                onClick={() => toggleDomanda(q.ID)}
+                            >
+                                <div className={styles.card_top}>
+                                    <span className={styles.id_tag}>ID: {q.ID}</span>
+                                    <div className={styles.checkbox_custom}>
+                                        <input 
+                                            type="checkbox" 
+                                            checked={isChecked} 
+                                            readOnly 
+                                        />
+                                        <span className={styles.checkmark}></span>
+                                    </div>
+                                </div>
+
+                                <div className={styles.card_content}>
+                                    {renderMedia(q)}
+                                    
+                                    <p className={styles.question_text}>
+                                        {props.tipoGioco === "COMPLETA LA PAROLA" ? (
+                                            <>Parola: <strong>{q.domanda}</strong></>
+                                        ) : q.domanda}
+                                    </p>
+
+                                    {q.suggerimento && (
+                                        <div className={styles.hint_box}>
+                                            <small>Suggerimento: {q.suggerimento}</small>
+                                        </div>
+                                    )}
+
+                                    {props.tipoGioco.includes("QUIZ") && (
+                                        <div className={styles.answers_preview}>
+                                            <div className={styles.ans_tag_corr}>{q.rispCorrettaN1}</div>
+                                            <div className={styles.ans_tag_wrong}>{q.rispSbagliataN1}</div>
+                                            {(q.rispCorrettaN2 || q.rispSbagliataN2) && <div className={styles.more_tag}>...</div>}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
     );
 }
 

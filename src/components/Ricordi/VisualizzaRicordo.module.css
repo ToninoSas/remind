@@ -1,175 +1,178 @@
-
-.header {
-    display: flex;
-    align-items: center; 
-    justify-content: space-between; 
+.mainWrapper {
     width: 100%;
-    margin-bottom: 20px;
-}
-
-
-.backButton {
-    background-color: #ff6b6b;
-    color: white;
-    border: none;
-    padding: 10px 10px;
-    border-radius: 8px;
-    font-size: 16px;
-    width: 110px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.backButton:hover {
-    background-color: #e04e4e;
-}
-
-
-.title {
-    font-size: 2.2em;
-    margin-bottom: 15px;
-    margin-right: 60px;
-    color: #333;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-align: center; 
-    flex-grow: 1; 
-}
-
-
-.detailsContainer {
+    min-height: 90vh;
+    background-color: #f4f7fa;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    max-width: 900px;  
-    width: 90%;
-    margin: 15px auto;
-    
-    padding: 30px;
-    border-radius: 15px;
-    background-color: #ffffff;
-    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);  
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-
-
-.detailsContainer:hover {
-    transform: translateY(-8px); 
-    box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.15); 
-}
-
-
-.detailsContainer p {
-    font-size: 1.1em;
-    color: #555;
-    margin-bottom: 15px;
-    line-height: 1.5;
-}
-
-
-.mediaContainer {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
     justify-content: center;
+    padding: 40px 20px;
+}
+
+.viewCard {
     width: 100%;
-    margin-top: 20px;
+    max-width: 1000px;
+    background: white;
+    border-radius: 25px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border: 1px solid #eef2f5;
+    animation: fadeIn 0.5s ease-out;
 }
 
-
-.detailImage {
-    max-width: 100%;
-    height: auto;
-    border-radius: 12px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); 
-    object-fit: cover;
+.cardHeader {
+    background-color: #163172; /* Navy professionale */
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    color: white;
 }
 
-
-.detailVideo {
-    width: 100%;
-    max-width: 650px;
-    height: auto;
-    border-radius: 12px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);  
+.headerTitle {
+    flex-grow: 1;
 }
 
-
-.detailAudio {
-    width: 100%;
-    max-width: 500px;
+.headerTitle h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
-
-.loading {
-    font-size: 1.5em;
-    color: #007bff;
-    text-align: center;
-    margin-top: 50px;
-    animation: fadeIn 1s ease-in-out infinite alternate;
+.typeBadge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 8px;
+    color: #62D2AD;
 }
 
-
-@keyframes fadeIn {
-    from { opacity: 0.5; }
-    to { opacity: 1; }
+.cardBody {
+    padding: 40px;
 }
 
+/* Info Section */
+.infoSection {
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #f0f4f8;
+}
+
+.infoSection h3 {
+    color: #3A6F6D;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
+
+.descriptionText {
+    font-size: 1.15rem;
+    color: #5a827f;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* Media Section */
+.mediaTitle {
+    color: #163172;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
 
 .mapContainer {
     width: 100%;
-    height: 800px; 
-    margin-top: 20px;
-    margin-bottom: 20px;
-    border-radius: 12px;
-    overflow: hidden; 
-    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);  
+    height: 500px;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 2px solid #eef2f1;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
+.filesLayout {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
 
-.leaflet-container {
+.mediaItem {
     width: 100%;
-    height: 100%;  
+    background: #f8fbfa;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.imgFluid, .videoFluid {
+    width: 100%;
     display: block;
+    height: auto;
+    max-height: 600px;
+    object-fit: contain;
+    background: #000; /* Per i video/immagini con aspect ratio diverso */
 }
 
-
-.leaflet-popup {
-    background-color: #fff;
-    border-radius: 5px;
-    padding: 8px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);  
+.audioPlayerBox {
+    padding: 30px;
+    display: flex;
+    justify-content: center;
 }
 
+.audioFull {
+    width: 100%;
+    max-width: 600px;
+}
+
+/* Loading State */
+.loadingWrapper {
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #3A6F6D;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #62D2AD;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
 @media (max-width: 768px) {
-    .detailsContainer {
-        width: 95%;
-        padding: 20px;
-    }
-
-    .header {
+    .cardHeader {
         flex-direction: column;
-        align-items: flex-start;
+        text-align: center;
+        padding: 30px 20px;
     }
-
-    .backButton {
-        font-size: 14px;
-        padding: 8px 12px;
+    
+    .cardBody {
+        padding: 25px;
     }
-
-    .mediaContainer {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .detailVideo, .detailAudio {
-        max-width: 100%;
-    }
-
-
+    
     .mapContainer {
-        height: 250px; 
+        height: 350px;
+    }
+
+    .headerTitle h1 {
+        font-size: 1.5rem;
     }
 }

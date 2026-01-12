@@ -4,7 +4,18 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { getServerMgr } from "../../backend_conn/ServerMgr.js";
 import { useNavigate, useParams } from "react-router-dom";
-import styles2 from './InserisciRicordo.module.css';
+import styles from './InserisciRicordo.module.css';
+import GenericButton from "../UI/GenericButton";
+
+// Fix per l'icona di default di Leaflet che spesso sparisce in React
+const customIcon = new L.Icon({
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
 
 function InserisciRicordo() {
     const navigate = useNavigate();
@@ -16,77 +27,54 @@ function InserisciRicordo() {
     const [latitudine, setLatitudine] = useState(null);
     const [longitudine, setLongitudine] = useState(null);
 
-    
     const handleMultimediaChange = (e) => {
         const files = Array.from(e.target.files);
         if (files.length + multimedia.length <= 4) {
             setMultimedia((prev) => [...prev, ...files]);
         } else {
-            alert('Puoi aggiungere solo 4 file');
+            alert('Puoi aggiungere al massimo 4 file');
         }
     };
 
-   
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        
         if (!tipo) {
             alert("Seleziona un tipo di ricordo prima di salvare.");
             return;
         }
-
-       
         if (tipo === "luogo" && (!latitudine || !longitudine)) {
             alert("Seleziona una posizione sulla mappa prima di salvare.");
             return;
         }
 
-        
         const ricordoData = {
             titolo: titolo,
             tipo: tipo,
             descrizione: descrizione,
             latitudine: latitudine,
             longitudine: longitudine,
-            multimedia: [],
+            multimedia: multimedia.map(file => file.name),
             id_box: boxID
         };
 
-      
-        multimedia.forEach((file) => {
-            ricordoData.multimedia.push(file.name); 
-        });
-
         try {
-            
             const response = await getServerMgr().insertRicordo(ricordoData);
-
             if (response.success) {
                 alert("Ricordo salvato con successo!");
-                
-                setTitolo("");
-                setTipo("");
-                setMultimedia([]);
-                setDescrizione("");
-                setLatitudine(null);
-                setLongitudine(null);
-                navigate(-1); 
+                navigate(-1);
             } else {
                 alert("Errore nel salvataggio del ricordo.");
             }
-
         } catch (error) {
-            console.error("Errore nel salvataggio del ricordo:", error);
+            console.error("Errore:", error);
             alert("Si è verificato un errore, riprova.");
         }
     };
 
-    const handleBack = () => {
+     const handleBack = () => {
         navigate(-1); 
     };
 
-   
     function LocationMarker() {
         useMapEvents({
             click(e) {
@@ -96,100 +84,121 @@ function InserisciRicordo() {
         });
 
         return latitudine && longitudine ? (
-            <Marker position={[latitudine, longitudine]}  icon={new L.Icon({
-                iconUrl: '/immagini/marker-icon-2x.png', 
-                iconSize: [30, 30],                   
-                iconAnchor: [16, 32],              
-                popupAnchor: [0, -32]                 
-              })}>
+            <Marker position={[latitudine, longitudine]} icon={customIcon}>
                 <Popup>Posizione selezionata</Popup>
             </Marker>
         ) : null;
     }
 
     return (
-        <div className={styles2.container}>
-            <h2>Inserisci un nuovo ricordo</h2>
-            <form onSubmit={handleSubmit} className={styles2.form}>
-                
-                <div className={styles2.field}>
-                    <label htmlFor="titolo">Titolo</label>
-                    <input 
-                        type="text" 
-                        id="titolo" 
-                        value={titolo} 
-                        onChange={(e) => setTitolo(e.target.value)} 
-                        required 
-                    />
-                </div>
+        <div className={styles.mainContainer}>
+            <div className={styles.configCard}>
+                <header className={styles.cardHeader}>
+                    <h2>Nuovo Ricordo</h2>
+                    <p>Inserisci un'immagine, un video, un audio o un luogo significativo</p>
+                </header>
 
-              
-                <div className={styles2.field}>
-                    <label htmlFor="tipo">Tipo di Multimedia</label>
-                    <select 
-                        id="tipo" 
-                        value={tipo} 
-                        onChange={(e) => setTipo(e.target.value)} 
-                        required
-                    >
-                        <option value="">Seleziona Tipo</option>
-                        <option value="immagine">Immagini</option>
-                        <option value="video">Video</option>
-                        <option value="audio">Audio</option>
-                        <option value="luogo">Luogo</option>
-                    </select>
-                </div>
+                <form onSubmit={handleSubmit} className={styles.cardBody}>
+                    <div className={styles.section}>
+                        <label className={styles.mainLabel}>1. Informazioni Generali</label>
+                        <div className={styles.gridFields}>
+                            <div className={styles.inputGroup}>
+                                <label htmlFor="titolo">Titolo del Ricordo</label>
+                                <input 
+                                    type="text" 
+                                    id="titolo" 
+                                    placeholder="Es: Il giorno del mio matrimonio"
+                                    value={titolo} 
+                                    onChange={(e) => setTitolo(e.target.value)} 
+                                    required 
+                                />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label htmlFor="tipo">Categoria</label>
+                                <select 
+                                    id="tipo" 
+                                    value={tipo} 
+                                    onChange={(e) => setTipo(e.target.value)} 
+                                    required
+                                >
+                                    <option value="" hidden>Seleziona tipo...</option>
+                                    <option value="immagine">🖼️ Immagine</option>
+                                    <option value="video">🎥 Video</option>
+                                    <option value="audio">🎵 Audio</option>
+                                    <option value="luogo">📍 Luogo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-                
-                {(tipo === 'immagine' || tipo === 'video' || tipo === 'audio') && (
-                    <div className={styles2.field}>
-                        <label htmlFor="multimedia">Carica file</label>
-                        <input 
-                            type="file" 
-                            id="multimedia" 
-                            accept={tipo === 'immagine' ? 'image/*' : tipo === 'video' ? 'video/*' : 'audio/*'} 
-                            onChange={handleMultimediaChange} 
-                            multiple 
-                            required 
+                    <div className={styles.section}>
+                        <label className={styles.mainLabel}>2. Contenuto Multimediale</label>
+                        
+                        {(tipo === 'immagine' || tipo === 'video' || tipo === 'audio') && (
+                            <div className={styles.uploadArea}>
+                                <label className={styles.uploadBtn}>
+                                    📁 Sfoglia file...
+                                    <input 
+                                        type="file" 
+                                        hidden
+                                        accept={tipo === 'immagine' ? 'image/*' : tipo === 'video' ? 'video/*' : 'audio/*'} 
+                                        onChange={handleMultimediaChange} 
+                                        multiple 
+                                    />
+                                </label>
+                                <div className={styles.fileStatus}>
+                                    {multimedia.length > 0 ? (
+                                        <ul className={styles.fileList}>
+                                            {multimedia.map((f, i) => <li key={i}>✅ {f.name}</li>)}
+                                        </ul>
+                                    ) : (
+                                        <p>Nessun file selezionato (Max 4)</p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {tipo === 'luogo' && (
+                            <div className={styles.mapWrapper}>
+                                <p className={styles.mapHint}>Clicca sulla mappa per segnare il punto esatto:</p>
+                                <div className={styles.mapContainerInner}>
+                                    <MapContainer 
+                                        center={[45.0, 9.0]} 
+                                        zoom={8} 
+                                        scrollWheelZoom={true}
+                                        style={{ width: '100%', height: '100%' }}
+                                    >
+                                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                        <LocationMarker />
+                                    </MapContainer>
+                                </div>
+                                {latitudine && (
+                                    <div className={styles.coordsBadge}>
+                                        📍 {latitudine.toFixed(4)}, {longitudine.toFixed(4)}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        
+                        {!tipo && <p className={styles.infoText}>Seleziona una categoria per procedere con l'inserimento.</p>}
+                    </div>
+
+                    <div className={styles.section}>
+                        <label className={styles.mainLabel}>3. Descrizione</label>
+                        <textarea 
+                            className={styles.textArea}
+                            placeholder="Aggiungi un pensiero o un dettaglio su questo ricordo..."
+                            value={descrizione} 
+                            onChange={(e) => setDescrizione(e.target.value)} 
                         />
-                        <p>Carica fino a 4 file. Hai caricato {multimedia.length} file.</p>
                     </div>
-                )}
 
-               
-                {tipo === 'luogo' && (
-                    <div className={styles2.field}>
-                        <label htmlFor="mappa">Seleziona una posizione sulla mappa</label>
-                        <MapContainer 
-                            center={[45.0, 9.0]} 
-                            zoom={8} 
-                            style={{ width: '100%', height: '400px' }}
-                        >
-                            <TileLayer
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            />
-                            <LocationMarker />
-                        </MapContainer>
-                        <p>Posizione selezionata: Latitudine {latitudine}, Longitudine {longitudine}</p>
-                    </div>
-                )}
-
-                
-                <div className={styles2.field}>
-                    <label htmlFor="descrizione">Descrizione</label>
-                    <textarea 
-                        id="descrizione" 
-                        value={descrizione} 
-                        onChange={(e) => setDescrizione(e.target.value)} 
-                    />
-                </div>
-
-                <div className={styles2.buttonsContainer}>
-    <button className={styles2.submitButton} type="submit">Salva Ricordo</button>
-    <button className={styles2.backButton} onClick={handleBack}>← Indietro</button>
-</div>
-
-            </form>
+                    <footer className={styles.actions}>
+                        <GenericButton buttonText="Annulla" onClick={handleBack} red_styling generic_button />
+                        <GenericButton type="submit" buttonText="Salva Ricordo" generic_button />
+                    </footer>
+                </form>
+            </div>
         </div>
     );
 }

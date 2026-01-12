@@ -1,5 +1,4 @@
 import styles from "./AddGioco.module.css";
-import Card from "../UI/Card";
 import GenericButton from "../UI/GenericButton";
 import RadioButton from "../UI/RadioButton";
 import { useContext, useEffect, useState } from "react";
@@ -8,237 +7,174 @@ import ElencoDomande from "./ElencoDomande";
 import AuthContext from "../../context/auth-context";
 import { getServerMgr } from "../../backend_conn/ServerMgr";
 
-var domande_nuovo_gioco = [];
-var categoriaGioco;
+function AddGioco(props) {
+    const game_ctx = useContext(GameContext);
+    const auth_ctx = useContext(AuthContext);
 
-function AddGioco(props){
+    // Form States
     const [tipologiaGioco, setTipologiaGioco] = useState("");
     const [titoloGioco, setTitoloGioco] = useState("");
-    const [validTitolo, setValidTitolo] = useState(true)
     const [livelloGioco, setLivelloGioco] = useState("MEDIA");
-    const [numeroCoppie, setNumeroCoppie] = useState(null);
+    const [numeroCoppie, setNumeroCoppie] = useState(2);
     const [domandeSelected, setDomandeSelected] = useState([]);
-    const [validNumeroDomande, setValidNumeroDomande] = useState(true);
-
-    const [selectedEasy, setSelectedEasy] = useState(false);
-    const [selectedNormal, setSelectedNormal] = useState(true);
-    const [selectedHard, setSelectedHard] = useState(false);
-
-    const game_ctx = useContext(GameContext);
-    const auth_ctx = useContext(AuthContext)
+    
+    // Validation States
+    const [validity, setValidity] = useState({ titolo: true, domande: true });
 
     useEffect(() => {
         setDomandeSelected([]);
-        // setNumeroRound(null);
-    }, [tipologiaGioco])
+    }, [tipologiaGioco]);
 
-    useEffect(() => {
-        domandeSelected.length === 0 ? setValidNumeroDomande(false) : setValidNumeroDomande(true)
-    }, [domandeSelected])
+    const handleLivelloChange = (livello) => {
+        setLivelloGioco(livello);
+    };
 
-    function selezioneDifficoltà(stringaDifficoltà){
-        switch (stringaDifficoltà){
-            case "FACILE":
-                if(!selectedEasy){
-                    setSelectedEasy(true);
-                    setSelectedNormal(false);
-                    setSelectedHard(false);
-                }
-                break;
+    const handleNumeroCoppie = (e) => {
+        const val = Math.max(2, Math.min(5, Number(e.target.value)));
+        setNumeroCoppie(val);
+    };
 
-            case "MEDIA":
-                if(!selectedNormal){
-                    setSelectedEasy(false);
-                    setSelectedNormal(true);
-                    setSelectedHard(false);
-                }
-                break;
-
-            case "DIFFICILE":
-                if(!selectedHard){
-                    setSelectedEasy(false);
-                    setSelectedNormal(false);
-                    setSelectedHard(true);
-                }
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    function titoloGiocoChangeHandler(event){
-        setTitoloGioco(event.target.value);
-        setValidTitolo(true)
-        // console.log(auth_ctx.tipoAccount)
-    }
-    function tipoGiocoChangeHandler(event){
-        setTipologiaGioco(event.target.value);
-        setValidNumeroDomande(true)
-        // console.log(event.target.value);
-    }
-    function livelloGiocoChangeHandler(stringa){
-        setLivelloGioco(stringa);
-        console.log(livelloGioco);
-    }
-    function numeroCoppieChangeHandler(event){
-        console.log(Number(event.target.value));
-        if(event.target.value > 5){
-            setNumeroCoppie(5)
-            // console.log(Number(event.target.value) > 5);
-        }
-        else if(event.target.value < 2){
-            setNumeroCoppie(2);
-        }
-        else{
-            setNumeroCoppie(Number(event.target.value));
-        }
-    }
-
-    function creaOggettoDomande(domandeSelezionate, categoriaGame){
-        // domande_nuovo_gioco = JSON.stringify(domandeSelezionate);
-        categoriaGioco = categoriaGame;
-
-        domandeSelected.length === 0 ? setValidNumeroDomande(false) : setValidNumeroDomande(true);
+    const handleDomandeSelection = (domandeSelezionate) => {
         setDomandeSelected(domandeSelezionate);
+        setValidity(prev => ({ ...prev, domande: domandeSelezionate.length > 0 }));
+    };
 
-        console.log("DOMANDE IN AddGioco.js DA SALVARE");
-        console.log(domandeSelezionate);
-    }
+    async function salvaNuovoGioco() {
+        const isTitoloValid = titoloGioco.trim().length > 0;
+        const isDomandeValid = tipologiaGioco === "GIOCO DELLE COPPIE" || domandeSelected.length > 0;
 
-    async function salvaNuovoGioco(){
-        console.log(domandeSelected);
-        let valore_TITOLO = true;
-        let valore_DOMANDE = true;
+        setValidity({ titolo: isTitoloValid, domande: isDomandeValid });
 
-        if(titoloGioco.length === 0){
-            setValidTitolo(false);
-            valore_TITOLO = false
-        }
-        else{
-            setValidTitolo(true)
-            valore_TITOLO = true
-        }
-        if(domandeSelected.length === 0 && tipologiaGioco !== "GIOCO DELLE COPPIE"){
-            setValidNumeroDomande(false)
-            valore_DOMANDE = false;
-        }
-        else{
-            setValidNumeroDomande(true);
-            valore_DOMANDE = true
-        }
-
-        if(valore_TITOLO && valore_DOMANDE){
-            let resultID = await getServerMgr().addGame(auth_ctx.utenteLoggatoUID, titoloGioco, tipologiaGioco, livelloGioco, domandeSelected, numeroCoppie)
-            .catch((err) => {
-                console.error(err)
-            });
-
-            console.log(resultID)
-
-            alert("Nuovo gioco salvato!")
-            props.chiudiFormNuovoGioco();
-            game_ctx.prendiTuttiGiochiDomande();
+        if (isTitoloValid && isDomandeValid) {
+            try {
+                await getServerMgr().addGame(
+                    auth_ctx.utenteLoggatoUID, 
+                    titoloGioco, 
+                    tipologiaGioco, 
+                    livelloGioco, 
+                    domandeSelected, 
+                    numeroCoppie
+                );
+                alert("Gioco creato con successo!");
+                props.chiudiFormNuovoGioco();
+                game_ctx.prendiTuttiGiochiDomande();
+            } catch (err) {
+                console.error(err);
+            }
         }
     }
 
-    return(
-        <div className={styles.wrapper_impostazioni_gioco}>
-            <h2 className={styles.title_scheda}>Creazione nuovo gioco</h2>
+    return (
+        <div className={styles.container}>
+            <div className={styles.configCard}>
+                <header className={styles.cardHeader}>
+                    <h2>Nuova Configurazione Gioco</h2>
+                    <p>Definisci i parametri e assegna le domande</p>
+                </header>
 
-            <label className={styles.label_style}>Seleziona un tipo di gioco:</label>
-            <select className={styles.select_style} onChange={tipoGiocoChangeHandler}>
-                <option hidden>-- select an option --</option>
-                <option>QUIZ</option>
-                <option>QUIZ CON IMMAGINI</option>
-                <option>QUIZ CON SUONI</option>
-                <option>QUIZ CON VIDEO</option>
-                <option>COMPLETA LA PAROLA</option>
-              
-            </select>
-            
-            {tipologiaGioco !== "" &&
-            <>
-                <div className={styles.wrapper_items}>
-                    <label className={styles.label_style}>Difficoltà Gioco:</label>
-                    <div className={styles.group_bottoni}>
-
-                        <RadioButton
-                        onClick={() => {
-                            selezioneDifficoltà("FACILE");
-                            livelloGiocoChangeHandler("FACILE");
-                        }}
-                        isSelected={selectedEasy}
-                        buttonText={"FACILE"}>
-                        </RadioButton>
-
-                        <RadioButton
-                        onClick={() => {
-                            selezioneDifficoltà("MEDIA");
-                            livelloGiocoChangeHandler("MEDIA");
-                        }}
-                        isSelected={selectedNormal}
-                        buttonText={"MEDIA"}>
-                        </RadioButton>
-
-                        <RadioButton
-                        onClick={() => {
-                            selezioneDifficoltà("DIFFICILE");
-                            livelloGiocoChangeHandler("DIFFICILE")
-                        }}
-                        isSelected={selectedHard}
-                        buttonText={"DIFFICILE"}>
-                        </RadioButton>
-                        
+                <div className={styles.cardBody}>
+                    {/* Step 1: Tipo Gioco */}
+                    <div className={styles.section}>
+                        <label className={styles.mainLabel}>1. Scegli la tipologia di gioco</label>
+                        <select 
+                            className={styles.selectStyle} 
+                            value={tipologiaGioco}
+                            onChange={(e) => setTipologiaGioco(e.target.value)}
+                        >
+                            <option value="" hidden>Seleziona un tipo...</option>
+                            <option>QUIZ</option>
+                            <option>QUIZ CON IMMAGINI</option>
+                            <option>QUIZ CON SUONI</option>
+                            <option>QUIZ CON VIDEO</option>
+                            <option>COMPLETA LA PAROLA</option>
+                            <option>GIOCO DELLE COPPIE</option>
+                        </select>
                     </div>
+
+                    {tipologiaGioco && (
+                        <div className={styles.animateIn}>
+                            {/* Step 2: Dati Base */}
+                            <div className={styles.section}>
+                                <label className={styles.mainLabel}>2. Informazioni Base</label>
+                                <div className={styles.gridFields}>
+                                    <div className={styles.inputGroup}>
+                                        <label>Nome del gioco</label>
+                                        <input 
+                                            type="text" 
+                                            className={`${styles.inputStyle} ${!validity.titolo ? styles.invalid : ""}`}
+                                            placeholder="Es: Quiz di Storia, Memoria Visiva..."
+                                            value={titoloGioco}
+                                            onChange={(e) => {setTitoloGioco(e.target.value); setValidity(p => ({...p, titolo: true}))}}
+                                        />
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <label>Difficoltà</label>
+                                        <div className={styles.difficultyGroup}>
+                                            <button 
+                                                className={`${styles.diffBtn} ${livelloGioco === 'FACILE' ? styles.activeEasy : ""}`}
+                                                onClick={() => handleLivelloChange('FACILE')}
+                                            >Facile</button>
+                                            <button 
+                                                className={`${styles.diffBtn} ${livelloGioco === 'MEDIA' ? styles.activeMedium : ""}`}
+                                                onClick={() => handleLivelloChange('MEDIA')}
+                                            >Media</button>
+                                            <button 
+                                                className={`${styles.diffBtn} ${livelloGioco === 'DIFFICILE' ? styles.activeHard : ""}`}
+                                                onClick={() => handleLivelloChange('DIFFICILE')}
+                                            >Difficile</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Step 3: Contenuti Specifici */}
+                            <div className={styles.section}>
+                                <label className={styles.mainLabel}>3. Contenuti del Gioco</label>
+                                
+                                {tipologiaGioco === "GIOCO DELLE COPPIE" ? (
+                                    <div className={styles.pairsBox}>
+                                        <label>Numero di coppie da indovinare (2-5)</label>
+                                        <input 
+                                            type="number" 
+                                            className={styles.inputStyle}
+                                            value={numeroCoppie} 
+                                            onChange={handleNumeroCoppie}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className={styles.questionSection}>
+                                        <p className={styles.hint}>Seleziona le domande dalla tua libreria:</p>
+                                        <div className={`${styles.listContainer} ${!validity.domande ? styles.invalidList : ""}`}>
+                                            <ElencoDomande
+                                                domandeNuovoGioco={handleDomandeSelection}
+                                                tipoGioco={tipologiaGioco}
+                                            />
+                                        </div>
+                                        {!validity.domande && <p className={styles.errorText}>Seleziona almeno una domanda per continuare</p>}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                <label className={`${styles.label_style} ${!validTitolo ? styles.invalid : ""}`}>Nome del gioco:</label>
-                <input className={`${styles.textbox_style} ${!validTitolo ? styles.invalid : ""}`} type="text" onChange={titoloGiocoChangeHandler}></input>
-                {!validTitolo && <div style={{width: "100%", color: "red", textAlign: "center"}}>Inserisci un nome per il gioco</div>}
-
-                {!validNumeroDomande && tipologiaGioco !== "GIOCO DELLE COPPIE" && <div style={{width: "100%", color: "red", textAlign: "center"}}>Devi selezionare almeno una domanda</div>}
-                
-                {tipologiaGioco === "GIOCO DELLE COPPIE" && 
-                    <>
-                        <label className={`${styles.label_style} ${!validTitolo ? styles.invalid : ""}`}>Numero di coppie:</label>
-                        <input className={`${styles.textbox_style} ${!validTitolo ? styles.invalid : ""}`} value={numeroCoppie} type="number" min={2} max={5} onChange={numeroCoppieChangeHandler}></input>
-                    </>
-                }
-
-                {tipologiaGioco !== "GIOCO DELLE COPPIE" && 
-                    <ElencoDomande
-                        domandeNuovoGioco={creaOggettoDomande}
-                        tipoGioco={tipologiaGioco}
-                        // listaDomandeDaModificare={domande_nuovo_gioco}
-                    >
-                    </ElencoDomande>
-                }
-            </>
-            }
-
-            <div className={styles.wrapper_generico}>
-                {tipologiaGioco !== "" &&
-                    <GenericButton
-                        onClick={salvaNuovoGioco}
-                        generic_button={true}
-                        buttonText={"Salva Gioco"}
-                        is_disabled={!validTitolo ? true : !validNumeroDomande && tipologiaGioco !== "GIOCO DELLE COPPIE" ? true : false}
-                    >
-                    </GenericButton>
-                }
-
-                <GenericButton
-                onClick={props.chiudiFormNuovoGioco}
-                generic_button={true}
-                red_styling
-                buttonText={"Indietro"}
-                >
-                </GenericButton>
+                <footer className={styles.actions}>
+                    <GenericButton 
+                        onClick={props.chiudiFormNuovoGioco} 
+                        buttonText="Annulla" 
+                        red_styling 
+                        generic_button 
+                    />
+                    {tipologiaGioco && (
+                        <GenericButton 
+                            onClick={salvaNuovoGioco} 
+                            buttonText="Crea Gioco" 
+                            generic_button 
+                        />
+                    )}
+                </footer>
             </div>
         </div>
-
-        
     );
 }
 

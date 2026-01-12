@@ -1,98 +1,100 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getServerMgr } from "../../backend_conn/ServerMgr.js";
 import RicordoSingolo from "./RicordoSingolo";
 import styles from "./DettagliBox.module.css"; 
+import GenericButton from "../UI/GenericButton";
 
 function DettagliBox() {
-    const { userID, boxID} = useParams();
-    const [box, setBox] = useState(null);
+    const { userID, boxID } = useParams();
     const [filtroTipo, setFiltroTipo] = useState("");
     const [filtroTitolo, setFiltroTitolo] = useState("");
     const [ricordi, setRicordi] = useState([]);
     const navigate = useNavigate();
 
-
-    
-
-    console.log("userID:", userID);
-    console.log("boxID:", boxID);
-    
-    console.log("recupero del box ID", boxID);
-
     useEffect(() => {
-        
         const EstraiRicordi = async () => {
             try {
                 const data = await getServerMgr().getRicordiByBoxId(boxID);
-                console.log("Ricordi ricevuti:", data);
-                setRicordi(data); 
+                setRicordi(data || []); 
             } catch (error) {
-                console.error("Errore nel recupero dei ricordi e multimedia:", error);
+                console.error("Errore nel recupero dei ricordi:", error);
             }
         };
-    
         EstraiRicordi();
     }, [boxID]);
-    
+
+    // Filtraggio ottimizzato
+    const ricordiFiltrati = useMemo(() => {
+        return ricordi.filter(ricordo => {
+            const matchesTipo = filtroTipo === "" || ricordo.tipo === filtroTipo;
+            const matchesTitolo = filtroTitolo === "" || 
+                ricordo.titolo.toLowerCase().includes(filtroTitolo.toLowerCase());
+            return matchesTipo && matchesTitolo;
+        });
+    }, [ricordi, filtroTipo, filtroTitolo]);
 
     const handleInserisciRicordo = () => {
         navigate(`/box-dei-ricordi/dettagliBox/dettagli-ricordo/inserisci-ricordo/${boxID}`);
     };
 
-    const handleBack = () => {
-        navigate(-1);
-    };
-    
-
     return (
-        <div className={styles.container}>
-            
-            <button className={styles.backButton} onClick={handleBack}>
-                ← Indietro
-            </button>
-    
-            
-            <div className={styles.filterBar}>
-                
-                <select 
-                    id="filtro" 
-                    value={filtroTipo} 
-                    onChange={(e) => setFiltroTipo(e.target.value)}
-                >
-                    <option value="" disabled hidden>Tipo Ricordo</option>
-                    <option value="">Tutti</option>
-                    <option value="immagine">Immagini</option>
-                    <option value="video">Video</option>
-                    <option value="audio">Audio</option>
-                    <option value="luogo">Luogo</option>
-                </select>
-    
-         
-                <button className={styles.insertButton} onClick={handleInserisciRicordo}>
-                    Inserisci Ricordo
-                </button>
-    
-               
-                <input 
-                    type="text" 
-                    className={styles.searchInput} 
-                    placeholder="Cerca per titolo..." 
-                    value={filtroTitolo} 
-                    onChange={(e) => setFiltroTitolo(e.target.value)} 
-                />
-            </div>
-    
-          
-            <div className={styles.ricordiList}>
-                {ricordi
-                    .filter(ricordo => 
-                        (filtroTipo === "" || ricordo.tipo === filtroTipo) &&
-                        (filtroTitolo === "" || ricordo.titolo.toLowerCase().includes(filtroTitolo.toLowerCase()))
-                    )
-                    .map((ricordo) => {
-                        console.log("ID Ricordo:", ricordo.id_ricordo); 
-                        return (
+        <div className={styles.main_wrapper}>
+            {/* Toolbar Superiore */}
+            <header className={styles.toolbar}>
+                <div className={styles.toolbar_content}>
+                    <div className={styles.left_section}>
+                        <button className={styles.back_btn} onClick={() => navigate(-1)}>
+                            <span className={styles.arrow}>←</span> Torna alle Box
+                        </button>
+                    </div>
+
+                    <div className={styles.center_section}>
+                        <div className={styles.filter_group}>
+                            <select 
+                                className={styles.select_filter}
+                                value={filtroTipo} 
+                                onChange={(e) => setFiltroTipo(e.target.value)}
+                            >
+                                <option value="">Tutti i contenuti</option>
+                                <option value="immagine">🖼️ Immagini</option>
+                                <option value="video">🎥 Video</option>
+                                <option value="audio">🎵 Audio</option>
+                                <option value="luogo">📍 Luogo</option>
+                            </select>
+                            
+                            <div className={styles.search_wrapper}>
+                                <input 
+                                    type="text" 
+                                    className={styles.search_input} 
+                                    placeholder="Cerca per titolo..." 
+                                    value={filtroTitolo} 
+                                    onChange={(e) => setFiltroTitolo(e.target.value)} 
+                                />
+                                <span className={styles.search_icon}>🔍</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={styles.right_section}>
+                        <GenericButton 
+                            onClick={handleInserisciRicordo}
+                            buttonText="＋ Aggiungi Ricordo"
+                            generic_button
+                        />
+                    </div>
+                </div>
+            </header>
+
+            <main className={styles.content_container}>
+                <div className={styles.header_info}>
+                    <h1>Contenuti dell'Archivio</h1>
+                    <p>Gestisci e visualizza i multimedia salvati per questa box</p>
+                </div>
+
+                {ricordiFiltrati.length > 0 ? (
+                    <div className={styles.ricordi_grid}>
+                        {ricordiFiltrati.map((ricordo) => (
                             <RicordoSingolo 
                                 key={ricordo.id_ricordo}
                                 titolo={ricordo.titolo}
@@ -104,12 +106,18 @@ function DettagliBox() {
                                 idRicordo={ricordo.id_ricordo} 
                                 boxID={boxID}
                             />
-                        );
-                    })}
-            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className={styles.empty_state}>
+                        <span className={styles.empty_icon}>✨</span>
+                        <h3>Nessun ricordo trovato</h3>
+                        <p>Prova a cambiare i filtri o aggiungi un nuovo ricordo cliccando il pulsante in alto.</p>
+                    </div>
+                )}
+            </main>
         </div>
     );
-    
 }
 
 export default DettagliBox;

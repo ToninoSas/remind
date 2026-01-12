@@ -1,149 +1,185 @@
-
-.container {
-    padding: 40px 20px;
-    background-color: #f4f4f4;
+.mainWrapper {
+    width: 100%;
     min-height: 100vh;
-    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fa;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
 }
 
-
-.ricordoDetails {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    max-width: 900px;
-    margin: 0 auto;
-    text-align: center;
+.detailCard {
+    width: 100%;
+    max-width: 1000px;
+    background: white;
+    border-radius: 25px;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+    border: 1px solid #eef2f5;
+    animation: fadeIn 0.5s ease-out;
 }
 
-.ricordoDetails h2 {
+.cardHeader {
+    background-color: #163172;
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    color: white;
+}
+
+.headerInfo {
+    flex-grow: 1;
+}
+
+.title {
+    margin: 0;
     font-size: 2rem;
-    color: #333;
-    margin-bottom: 20px;
-    font-weight: 600;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
-.ricordoDetails p {
+.typeBadge {
+    display: inline-block;
+    background: rgba(98, 210, 173, 0.2);
+    color: #62D2AD;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 8px;
+}
+
+.cardBody {
+    padding: 40px;
+}
+
+/* Sezione Descrizione */
+.descriptionSection {
+    margin-bottom: 40px;
+    background: #fcfdfd;
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid #f0f4f2;
+}
+
+.descriptionSection h3 {
+    color: #3A6F6D;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
+
+.descriptionSection p {
     font-size: 1.1rem;
-    color: #555;
-    margin: 10px 0;
+    line-height: 1.7;
+    color: #5a827f;
+    margin: 0;
 }
 
-.ricordoDetails strong {
-    color: #333;
+/* Galleria Multimedia */
+.multimediaSection h3 {
+    color: #163172;
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+    font-weight: 700;
 }
 
-
-.multimedia {
-    margin-top: 20px;
+.multimediaGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
 }
 
 .mediaItem {
-    background-color: #f9f9f9;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: #ffffff;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid #eef2f1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    transition: transform 0.3s ease;
 }
 
 .mediaItem:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    transform: scale(1.02);
 }
 
-.media {
+.mediaContent {
     width: 100%;
-    border-radius: 8px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-}
-
-.mediaItem img {
+    height: 250px;
     object-fit: cover;
-    max-height: 250px;
-    border-radius: 8px;
+    display: block;
+    background-color: #f8fbfa;
 }
 
-.mediaItem video {
-    max-width: 100%;
-    max-height: 250px;
-    border-radius: 8px;
-}
-
-
-.backButton {
-    background-color: #e74c3c;
-    color: white;
-    padding: 10px 10px;
-    border-radius: 8px;
-    font-size: 1rem;
-    border: none;
-    cursor: pointer;
-    margin-bottom: 20px;
-    display: inline-block;
-    transition: background-color 0.3s, transform 0.2s ease;
-}
-
-.backButton:hover {
-    background-color: #c0392b;
-    transform: scale(1.05);
-}
-
-
-@media (max-width: 1024px) {
-    .multimedia {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
-}
-
-@media (max-width: 600px) {
-    .ricordoDetails {
-        padding: 15px;
-    }
-
-    .multimedia {
-        grid-template-columns: 1fr;
-    }
-}
-
-
-.filterBar {
+/* Audio Styling */
+.audioContainer {
+    padding: 30px 20px;
+    text-align: center;
+    background: #f8fbfa;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    margin-bottom: 20px;
     gap: 15px;
 }
 
-.filterBar select,
-.filterBar input {
-    padding: 8px 12px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.audioIcon {
+    font-size: 2rem;
 }
 
-.filterBar select {
-    width: 200px;
+.audioElement {
+    width: 100%;
 }
 
-.filterBar input {
-    width: 300px;
+/* Altri stati */
+.loadingWrapper {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #3A6F6D;
 }
 
-.filterBar button {
-    background-color: #007bff;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #62D2AD;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
 }
 
-.filterBar button:hover {
-    background-color: #0056b3;
+.unsupported {
+    padding: 40px 20px;
+    text-align: center;
+    color: #7a8d8c;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .cardHeader {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+    }
+    
+    .cardBody {
+        padding: 25px;
+    }
+
+    .multimediaGrid {
+        grid-template-columns: 1fr;
+    }
 }

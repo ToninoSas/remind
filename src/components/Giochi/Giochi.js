@@ -235,6 +235,7 @@ function Giochi() {
 
   return (
     <div className={styles.main_wrapper}>
+      {game_ctx.showModale && game_ctx.modale}
       {showSearchBoxAndButton && auth_ctx.tipoAccount !== "Paziente" && (
         <header className={styles.toolbar}>
           <div className={styles.toolbar_content}>

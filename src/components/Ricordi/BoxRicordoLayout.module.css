@@ -1,112 +1,162 @@
-
-.box {
+.card_wrapper {
     background-color: white;
-    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid #eef2f5;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.card_wrapper:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(58, 111, 109, 0.12);
+    border-color: #62D2AD;
+}
+
+/* Header della Card */
+.card_header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.icon_container {
+    width: 50px;
+    height: 50px;
+    background-color: #f0f9f6;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    cursor: pointer;
-    width: 95%;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
-    box-sizing: border-box;
-    border: 2px solid #e0e0e0; 
-    transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
 }
 
-
-.box:hover {
-    transform: scale(1.03); 
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2); 
-    border: 2px solid #007bff; 
+.title_group {
+    display: flex;
+    flex-direction: column;
 }
 
-
-.info {
-    margin-bottom: 20px;
+.patient_name {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #163172;
+    line-height: 1.2;
 }
 
-
-.nomeCognome {
-    font-size: 26px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 10px;
+.id_badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #62D2AD;
+    letter-spacing: 0.5px;
 }
 
-
-.info p {
-    font-size: 16px;
-    color: #555;
-    margin: 5px 0;
+/* Corpo della Card */
+.card_body {
+    background-color: #fcfdfd;
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid #f4f8f7;
 }
 
-
-.actions {
+.info_row {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
+    padding: 6px 0;
 }
 
+.info_row:not(:last-child) {
+    border-bottom: 1px solid #f0f4f3;
+}
 
-.actions button {
-    padding: 12px 10px;
-    border-radius: 8px;
+.label {
+    font-size: 14px;
+    color: #7a8d8c;
+    font-weight: 600;
+}
+
+.value {
+    font-size: 14px;
+    color: #163172;
+    font-weight: 700;
+}
+
+/* Azioni */
+.card_actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 15px;
+}
+
+.main_action {
+    flex-grow: 1;
+}
+
+.admin_tools {
+    display: flex;
+    gap: 8px;
+    margin-left: 15px;
+}
+
+.icon_btn_edit, .icon_btn_delete {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
     border: none;
     cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    width: 30%;
-    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s;
 }
 
-
-.viewButton {
-    background-color: #007bff;
-    color: white;
-    font-weight: bold;
+.icon_btn_edit {
+    background-color: #f0f4f8;
+    color: #1e56a0;
 }
 
-.viewButton:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
+.icon_btn_edit:hover {
+    background-color: #e2e9f0;
+    transform: scale(1.1);
 }
 
-
-.editButton {
-    background-color: #f0ad4e;
-    color: white;
-    font-weight: bold;
+.icon_btn_delete {
+    background-color: #fff0f1;
+    color: #dc3545;
 }
 
-.editButton:hover {
-    background-color: #ec971f;
-    transform: scale(1.05);
+.icon_btn_delete:hover {
+    background-color: #ffe5e7;
+    transform: scale(1.1);
 }
 
-
-.deleteButton {
-    background-color: #d9534f;
-    color: white;
-    font-weight: bold;
-}
-
-.deleteButton:hover {
-    background-color: #c9302c;
-    transform: scale(1.05);
-}
-
-
-@media (max-width: 768px) {
-    .actions {
+/* Mobile */
+@media (max-width: 500px) {
+    .card_wrapper {
+        padding: 20px;
+    }
+    
+    .card_actions {
         flex-direction: column;
+        gap: 15px;
     }
-
-    .actions button {
+    
+    .main_action {
         width: 100%;
-        margin-bottom: 10px;
+    }
+    
+    .admin_tools {
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
     }
 }
-

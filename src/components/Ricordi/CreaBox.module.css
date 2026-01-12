@@ -1,134 +1,154 @@
-
-.container {
-    max-width: 450px;
-    margin: 50px auto;
-    padding: 30px;
-    background: #ffffff; 
-    border-radius: 12px; 
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
-    text-align: left; 
-    font-family: 'Arial', sans-serif;
+.mainContainer {
+    width: 100%;
+    min-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #f4f7fa;
 }
 
-h2 {
+.configCard {
+    width: 100%;
+    max-width: 700px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border: 1px solid #eef2f5;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.cardHeader {
+    background-color: #3A6F6D;
+    padding: 30px 40px;
+    color: white;
     text-align: center;
-    font-size: 1.8rem;
-    color: #2c3e50; 
-    margin-bottom: 20px;
 }
 
+.cardHeader h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
 
-form {
+.cardHeader p {
+    margin: 5px 0 0;
+    opacity: 0.8;
+    font-size: 0.95rem;
+}
+
+.cardBody {
+    padding: 40px;
+}
+
+.section {
+    margin-bottom: 30px;
+}
+
+.mainLabel {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #163172;
+    margin-bottom: 15px;
+    border-left: 4px solid #62D2AD;
+    padding-left: 15px;
+}
+
+.selectStyle {
+    width: 100%;
+    padding: 12px 18px;
+    border: 2px solid #eef2f1;
+    border-radius: 12px;
+    font-size: 16px;
+    color: #163172;
+    background-color: #fafdfc;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.selectStyle:focus {
+    border-color: #62D2AD;
+    outline: none;
+    background: white;
+}
+
+.gridFields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.inputGroup {
     display: flex;
     flex-direction: column;
-    gap: 5px; 
+    gap: 8px;
 }
 
-
-label {
-    font-size: 1rem;
-    color: #333;
-    font-weight: bold;
-    margin-top: 8px; 
+.inputGroup label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #3A6F6D;
+    text-transform: uppercase;
+    margin-left: 5px;
 }
 
-
-input {
-    padding: 12px;
-    font-size: 1rem;
-    margin-top: 5px;
-    border: 2px solid #ddd; 
-    border-radius: 8px;
-    background-color: #fafafa;
-    transition: all 0.3s ease;
+.inputGroup input {
+    padding: 12px 15px;
+    border: 2px solid #eef2f1;
+    border-radius: 10px;
+    font-size: 16px;
+    background-color: #fafdfc;
+    transition: all 0.3s;
 }
 
-
-input:focus {
+.inputGroup input:focus {
+    border-color: #62D2AD;
     outline: none;
-    border-color: #007bff; 
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); 
+    box-shadow: 0 0 0 4px rgba(98, 210, 173, 0.08);
 }
-
-
-select {
-    padding: 12px;
-    font-size: 1rem;
-    margin-top: 5px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    background-color: #fafafa;
-    transition: all 0.3s ease;
-}
-
-
-select:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-
-.buttonContainer {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.createButton,
-.backButton {
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 48%;
-}
-
-
-.createButton {
-    background-color: #28a745; 
-    color: white;
-}
-
-.createButton:hover {
-    background-color: #218838; 
-    transform: scale(1.05); 
-}
-
-
-.backButton {
-    background-color: #dc3545;
-    color: white;
-}
-
-.backButton:hover {
-    background-color: #c82333;
-    transform: scale(1.05); 
-}
-
 
 .invalid {
-    border: 2px solid #dc3545; 
-    box-shadow: 0 0 5px rgba(220, 53, 69, 0.5); 
+    border-color: #e74c3c !important;
 }
 
+.errorText {
+    color: #e74c3c;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 5px;
+    display: block;
+}
+
+.actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f4f8;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
 @media (max-width: 600px) {
-    .container {
-        max-width: 90%;
-        padding: 15px;
+    .gridFields {
+        grid-template-columns: 1fr;
+    }
+    
+    .cardBody {
+        padding: 25px;
     }
 
-    .buttonContainer {
-        flex-direction: column;
-        gap: 15px;
+    .actions {
+        flex-direction: column-reverse;
     }
-
-    .createButton,
-    .backButton {
+    
+    .actions button {
         width: 100%;
     }
 }

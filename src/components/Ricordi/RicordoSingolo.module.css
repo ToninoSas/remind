@@ -1,215 +1,155 @@
-
-.ricordoItem {
+.card_wrapper {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #eef2f5;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    max-width: 650px;
-    width: 90%;
-    margin: 20px auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 15px;
-    background-color: #fff;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.ricordoItem:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-}
-
-.ricordoItem h3 {
-    font-size: 1.7em;
-    margin-bottom: 15px;
-    color: #333;
-    font-weight: 600;
-}
-
-.ricordoItem p {
-    font-size: 1.1em;
-    color: #666;
-    margin-bottom: 15px;
-    line-height: 1.5;
-}
-
-.ricordoItem strong {
-    font-weight: 600;
-    color: #333;
-}
-
-
-.multimediaHint {
-    font-size: 1em;
-    color: #007bff;
-    font-weight: 500;
-    margin-bottom: 15px;
-}
-
-
-.mediaContainer {
-    margin-top: 20px;
-    width: 100%;
-}
-
-
-.previewImage {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.previewImage:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-
-.previewVideo {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-
-.previewAudio {
-    max-width: 100%;
-    width: 400px;
-    height: 50px;
-    border-radius: 10px;
-    margin: 15px 0;
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.previewAudio:hover {
-    background-color: #f1f1f1;
-    border-color: #007bff;
-    transform: scale(1.05);
-}
-
-
-.viewButton {
-    background-color: #007bff;
-    color: white;
-    padding: 12px 20px;
-    font-size: 1.1em;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-    margin-top: 10px;
-    margin-right: 2px;
-}
-
-.viewButton:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
-
-.editButton {
-    background-color: #f39c12;
-    color: white;
-    padding: 12px 20px;
-    font-size: 1.1em;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-    margin-top: 10px;
-    margin-right: 2px;
-}
-
-.editButton:hover {
-    background-color: #e67e22;
-    transform: scale(1.05);
-}
-
-
-.deleteButton {
-    background-color: #e74c3c;
-    color: white;
-    padding: 12px 20px;
-    font-size: 1.1em;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-    margin-top: 10px;
-}
-
-.deleteButton:hover {
-    background-color: #c0392b;
-    transform: scale(1.05);
-}
-
-
-.mapContainer {
-    width: 100%;
-    height: 400px;
-    min-height: 300px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    border-radius: 10px;
     overflow: hidden;
-    background-color: #ececec;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
 }
 
-.leafletMap {
+.card_wrapper:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(58, 111, 109, 0.12);
+    border-color: #62D2AD;
+}
+
+/* Header */
+.card_header {
+    padding: 20px;
+    text-align: left;
+}
+
+.type_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f0f9f6;
+    color: #3A6F6D;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #163172;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Media Section */
+.media_section {
+    width: 100%;
+    height: 200px;
+    background: #f8fbfa;
+    position: relative;
+    overflow: hidden;
+}
+
+.media_display, .map_wrapper {
     width: 100%;
     height: 100%;
 }
 
-
-.leaflet-popup {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+.img_fill, .video_fill {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-
-@media (max-width: 768px) {
-    .ricordoItem {
-        width: 100%;
-        padding: 15px;
-    }
-
-    .previewVideo {
-        max-height: 200px;
-    }
-
-    .previewAudio {
-        width: 100%;
-    }
-
-    .mapContainer {
-        height: 50vh;
-    }
-
-    .viewButton, .editButton, .deleteButton {
-        width: 100%;
-        font-size: 1em;
-        padding: 10px 15px;
-        margin-top: 10px;
-    }
+.audio_wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 20px;
 }
 
-@media (max-width: 480px) {
-    .ricordoItem {
-        width: 100%;
-        padding: 10px;
-    }
+.audio_player {
+    width: 100%;
+}
 
-    .previewAudio {
-        width: 100%;
-        height: auto;
+.map_view {
+    width: 100%;
+    height: 100%;
+}
+
+/* Body */
+.card_body {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.description {
+    font-size: 14px;
+    color: #5a827f;
+    line-height: 1.5;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.extra_info {
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #62D2AD;
+}
+
+/* Actions */
+.card_actions {
+    padding: 15px 20px;
+    background: #f8fbfa;
+    border-top: 1px solid #eef2f1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.main_btn {
+    flex-grow: 1;
+}
+
+.tool_btns {
+    display: flex;
+    gap: 8px;
+    margin-left: 15px;
+}
+
+.btn_edit, .btn_delete {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn_edit { background: #f0f4f8; }
+.btn_delete { background: #fff0f1; }
+
+.btn_edit:hover { background: #e2e9f0; transform: scale(1.1); }
+.btn_delete:hover { background: #ffe5e7; transform: scale(1.1); }
+
+@media (max-width: 600px) {
+    .card_actions {
+        flex-direction: column;
+        gap: 12px;
     }
+    .main_btn { width: 100%; }
+    .tool_btns { width: 100%; justify-content: center; margin: 0; }
 }
