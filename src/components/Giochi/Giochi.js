@@ -104,7 +104,6 @@ function Giochi() {
       giocoSvoltoID = game_ctx.listaGiochi[indice].gameID;
       coppie = game_ctx.listaGiochi[indice].numero;
       INDICEGIOCO_VAR = indice;
-      setGameActiveIndex(indice);
     }
 
     let domandeDelGioco = game_ctx.domande.filter((d) =>
@@ -122,12 +121,15 @@ function Giochi() {
       domandeGioco: domandeDelGioco,
     };
 
-    if(DOMANDEGIOCO.length === 0){
+    if(DOMANDEGIOCO.length === 0 && stringa_TIPOGIOCO !== "GIOCO DELLE COPPIE"){
       console.log("gioco vuoto senza domande");
       setGameObject(null);
       alert("Questo gioco non presenta ancora domande!");
       return;
     }
+
+    setGameActiveIndex(indice);
+
 
     switch (stringa_TIPOGIOCO) {
       case "QUIZ":
