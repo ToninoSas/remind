@@ -13,6 +13,7 @@ function EditGioco(props) {
     const [tipoGiocoModifica] = useState(props.tipoGioco);
     const [livelloGiocoModifica, setLivelloGiocoModifica] = useState(props.difficulty);
     const [numeroCoppie, setNumeroCoppie] = useState(props.numero);
+    const [categoriaGioco, setCategoriaGioco] = useState("");
     const [domandeSelected, setDomandeSelected] = useState(game_ctx.domandeDaModificare || []);
     
     // Validation States
@@ -50,7 +51,8 @@ function EditGioco(props) {
                     nomeGiocoModifica, 
                     livelloGiocoModifica, 
                     domandeSelected, 
-                    numeroCoppie, 
+                    numeroCoppie,
+                    categoriaGioco, 
                     props.gameID
                 );
                 alert("Gioco modificato con successo!");
@@ -80,6 +82,23 @@ function EditGioco(props) {
                             value={tipoGiocoModifica} 
                             readOnly 
                         />
+                    </div>
+
+                    <div className={styles.section}>
+                        <label className={styles.mainLabel}>Scegli la categoria del gioco</label>
+                        <select 
+                            className={styles.selectStyle} 
+                            value={categoriaGioco}
+                            onChange={(e) => setCategoriaGioco(e.target.value)}
+                        >
+                            <option value="" hidden>Seleziona un tipo...</option>
+                            <option>Memoria a breve termine</option>
+                            <option>Memoria autobiografica</option>
+                            <option>Memoria visiva-spaziale</option>
+                            <option>Categorizzazione</option>
+                            <option>Riconoscimento volti</option>
+                            <option>Completamento</option>
+                        </select>
                     </div>
 
                     {/* Dati Base */}

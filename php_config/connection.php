@@ -1982,7 +1982,8 @@ WHERE patients.ID = ?
         
         $pazienteID = $dataJson["pazienteID"];
         
-        $retrieveQuestionsList = $i_conn->prepare("SELECT * FROM `resultsGames` WHERE pazienteID = ?");
+        // $retrieveQuestionsList = $i_conn->prepare("SELECT * FROM `resultsGames` WHERE pazienteID = ?");
+        $retrieveQuestionsList = $i_conn->prepare("SELECT R.*, G.categoriaGioco FROM resultsgames AS R JOIN games AS G ON R.giocoID = G.gameID WHERE pazienteID = ?");
         $retrieveQuestionsList->bind_param("i", $pazienteID);
         
         $retrieveQuestionsList->execute();

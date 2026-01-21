@@ -38,7 +38,7 @@
     padding-left: 15px;
 }
 
-.inputStyle {
+.selectStyle, .inputStyle {
     width: 100%;
     padding: 12px 18px;
     border: 2px solid #eef2f1;
@@ -46,6 +46,12 @@
     font-size: 16px;
     color: #163172;
     transition: all 0.3s;
+}
+
+.selectStyle:focus, .inputStyle:focus {
+    border-color: #62D2AD;
+    outline: none;
+    background: #fafffe;
 }
 
 .inputReadOnly {

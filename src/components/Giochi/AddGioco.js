@@ -14,6 +14,7 @@ function AddGioco(props) {
     // Form States
     const [tipologiaGioco, setTipologiaGioco] = useState("");
     const [titoloGioco, setTitoloGioco] = useState("");
+    const [categoriaGioco, setCategoriaGioco] = useState("");
     const [livelloGioco, setLivelloGioco] = useState("MEDIA");
     const [numeroCoppie, setNumeroCoppie] = useState(2);
     const [domandeSelected, setDomandeSelected] = useState([]);
@@ -91,11 +92,28 @@ function AddGioco(props) {
                         </select>
                     </div>
 
+                    <div className={styles.section}>
+                        <label className={styles.mainLabel}>2. Scegli la categoria del gioco</label>
+                        <select 
+                            className={styles.selectStyle} 
+                            value={categoriaGioco}
+                            onChange={(e) => setCategoriaGioco(e.target.value)}
+                        >
+                            <option value="" hidden>Seleziona un tipo...</option>
+                            <option>Memoria a breve termine</option>
+                            <option>Memoria autobiografica</option>
+                            <option>Memoria visiva-spaziale</option>
+                            <option>Categorizzazione</option>
+                            <option>Riconoscimento volti</option>
+                            <option>Completamento</option>
+                        </select>
+                    </div>
+
                     {tipologiaGioco && (
                         <div className={styles.animateIn}>
                             {/* Step 2: Dati Base */}
                             <div className={styles.section}>
-                                <label className={styles.mainLabel}>2. Informazioni Base</label>
+                                <label className={styles.mainLabel}>3. Informazioni Base</label>
                                 <div className={styles.gridFields}>
                                     <div className={styles.inputGroup}>
                                         <label>Nome del gioco</label>
@@ -129,7 +147,7 @@ function AddGioco(props) {
 
                             {/* Step 3: Contenuti Specifici */}
                             <div className={styles.section}>
-                                <label className={styles.mainLabel}>3. Contenuti del Gioco</label>
+                                <label className={styles.mainLabel}>4. Contenuti del Gioco</label>
                                 
                                 {tipologiaGioco === "GIOCO DELLE COPPIE" ? (
                                     <div className={styles.pairsBox}>

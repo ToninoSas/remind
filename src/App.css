@@ -1,3 +1,21 @@
+/* index.css o App.css */
+
+:root {
+  --app-zoom: 1; /* Valore di default */
+}
+
+body {
+  /* Usiamo transform-origin per evitare che lo zoom sposti tutto a destra */
+  transform-origin: top center;
+  transform: scale(var(--app-zoom));
+  
+  /* Importante: adattare l'altezza per evitare spazi vuoti o scroll indesiderati */
+  width: calc(100% / var(--app-zoom));
+  height: calc(100% / var(--app-zoom));
+  transition: transform 0.3s ease-out;
+}
+
+
 .App {
   background-color: #282c34;
   background-image: linear-gradient(180deg, #62D2AD, #3A6F6D);

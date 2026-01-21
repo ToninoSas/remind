@@ -103,7 +103,7 @@
 }
 
 .question_text {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 600;
     color: #163172;
     margin: 0;
@@ -142,7 +142,7 @@
 }
 
 .answer_group label {
-    font-size: 12px;
+    font-size: 20px;
     font-weight: bold;
     color: #666;
     display: block;
@@ -153,11 +153,12 @@
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
+    /* font-size: 16px; */
 }
 
 .chip_correct,
 .chip_wrong {
-    font-size: 13px;
+    font-size: 20px;
     padding: 4px 10px;
     border-radius: 20px;
     color: white;

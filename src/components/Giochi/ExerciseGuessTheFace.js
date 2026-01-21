@@ -47,7 +47,7 @@ function ExerciseGuessTheFace(props) {
         setShuffledAnswers(tutte);
 
         // Timer
-        let secondi = props.LIVELLOGIOCO === "DIFFICILE" ? 10 : 15;
+        let secondi = props.LIVELLOGIOCO === "DIFFICILE" ? 40 : 30;
         if (props.LIVELLOGIOCO !== "FACILE") {
             setTimer(secondi);
             clearInterval(timerInterval.current);

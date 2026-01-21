@@ -10,6 +10,7 @@ import Giochi from './components/Giochi/Giochi';
 import AuthContext from './context/auth-context';
 import { PatientContextProvider } from './context/patients-context';
 import Modal from './components/UI/Modal';
+import ZoomControl from './components/UI/ZoomControl';
 import { GameContextProvider } from './context/game-context';
 import { getServerMgr } from './backend_conn/ServerMgr';
 
@@ -26,7 +27,7 @@ function App() {
 
   useEffect(() => {
     initSingleton()
-    .then(setSingletonHasLoaded(true))
+      .then(setSingletonHasLoaded(true))
   }, [])
 
   // useEffect(async () => {
@@ -35,100 +36,71 @@ function App() {
   // }, [])
 
   useEffect(() => {
-    if(auth_ctx.tipoAccount === "Paziente"){
+    if (auth_ctx.tipoAccount === "Paziente") {
       setSchermataMostrata('SCHERMATA_Giochi')
     }
-    else{
+    else {
       setSchermataMostrata('SCHERMATA_Pazienti')
     }
   }, [auth_ctx.tipoAccount])
 
-  function initSingleton(){
+  function initSingleton() {
     return new Promise((resolve, reject) => {
       getServerMgr(resolve)
     })
   }
 
-  function changeSchermata(schermata){
+  function changeSchermata(schermata) {
     console.log('CAMBIO SCHERMATA');
 
-    switch(schermata){
+    switch (schermata) {
       case 0:
         setSchermataMostrata('SCHERMATA_Pazienti');
         break;
-  
+
       case 1:
         setSchermataMostrata('SCHERMATA_Attività');
         break;
-  
+
       case 2:
         setSchermataMostrata('SCHERMATA_Giochi');
         break;
-  
-     
-  
+
+
+
       default:
         break;
     }
   }
 
-  if(singletonHasLoaded){
+  if (singletonHasLoaded) {
     return (
       <div className='App'>
-  
+        {/* <ZoomControl /> */}
         {/* {auth_ctx.utenteLoggato !== null && auth_ctx.logoutModal &&
          
           
         } */}
-          
+
         {/* {auth_ctx.utenteLoggato === null && <Login></Login>} */}
 
         <PatientContextProvider>
-        <GameContextProvider>
-       
-      
-
-          <RoutingNew>
-            {/* {auth_ctx.utenteLoggato !== null && 
-              
-              <MainMenu
-                showSchermata = {changeSchermata}>
-              </MainMenu>
-            
-            } */}
-          </RoutingNew>
-          
-          {/* {auth_ctx.utenteLoggato !== null && schermataMostrata === 'SCHERMATA_Pazienti' && <div className='wrap_schermata'><Pazienti/></div>} */}
-          {/* {auth_ctx.utenteLoggato !== null && schermataMostrata === 'SCHERMATA_Attività' &&
-           
-            <div className='wrap_schermata'>
-              <Attività/>
-            </div>
-         
-          } */}
-          {/* {auth_ctx.utenteLoggato !== null && schermataMostrata === 'SCHERMATA_Giochi' && 
-            
-            <div className='wrap_schermata'>
-              <Giochi/>
-            </div>
-            
-          } */}
-          {}
-     
-        
-        </GameContextProvider>
+          <GameContextProvider>
+            <RoutingNew>
+            </RoutingNew>
+          </GameContextProvider>
         </PatientContextProvider>
-  
+
       </div>
     );
   }
-  else{
-    return(
+  else {
+    return (
       <div>LOADINGG</div>
     );
   }
 
-  
+
 }
 
 export default App;
@@ -147,11 +119,11 @@ export default App;
           Learn React
         </a> */}
 
-        // <Login
-        // onUserLogin = {userLoggedin}>
-        // </Login>
+// <Login
+// onUserLogin = {userLoggedin}>
+// </Login>
 
-        // <MainMenu
-        // makeUserLogout = {userLoggedout}
-        // showSchermata = {changeSchermata}>
-        // </MainMenu>
+// <MainMenu
+// makeUserLogout = {userLoggedout}
+// showSchermata = {changeSchermata}>
+// </MainMenu>

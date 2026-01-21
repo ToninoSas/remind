@@ -617,12 +617,13 @@ function initServerMgr(cb) {
         }
     }
 
-    serverMgr.addGame = async (creatorID, nomeGioco, tipoGioco, livelloGioco, domande, numero, cb) => {
+    serverMgr.addGame = async (creatorID, nomeGioco, tipoGioco, livelloGioco, domande, numero, categoriaGioco, cb) => {
         let result = await serverMgr.requestFetchData("addGame", {
             creatorID: creatorID,
             nomeGioco: nomeGioco,
             tipoGioco: tipoGioco,
             livelloGioco: livelloGioco,
+            categoriaGioco: categoriaGioco,
             // domande: domande
             numero: numero
         })
@@ -639,11 +640,11 @@ function initServerMgr(cb) {
         }
     }
 
-    serverMgr.updateGame = async (nomeGioco, livelloGioco, domande, numero, gameID, cb) => {
+    serverMgr.updateGame = async (nomeGioco, livelloGioco, domande, numero, categoriaGioco, gameID, cb) => {
         let result = await serverMgr.requestFetchData("updateGame", {
             nomeGioco: nomeGioco,
             livelloGioco: livelloGioco,
-            // categoriaGioco: categoriaGioco,
+            categoriaGioco: categoriaGioco,
             // domande: domande,
             numero: numero,
             gameID: gameID

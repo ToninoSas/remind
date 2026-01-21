@@ -27,11 +27,11 @@ function GuessTheWord(props){
 
     useEffect(() => {
         if(props.LIVELLOGIOCO === "NORMALE"){
-            secondi = 15;
+            secondi = 25;
             setTimer(secondi);
         }
         if(props.LIVELLOGIOCO === "DIFFICILE"){
-            secondi = 10;
+            secondi = 35;
             setTimer(secondi);
         }
         interval = setInterval(() => {
@@ -136,11 +136,11 @@ function GuessTheWord(props){
         setDisableButton(false);
 
         if(props.LIVELLOGIOCO === "NORMALE"){
-            secondi = 15;
+            secondi = 25;
             setTimer(secondi);
         }
         if(props.LIVELLOGIOCO === "DIFFICILE"){
-            secondi = 10;
+            secondi = 20;
             setTimer(secondi);
         }
         interval = setInterval(() => {
@@ -173,7 +173,7 @@ function GuessTheWord(props){
 
             {gameStarted && 
                 <div className={styles.wrapper_gioco}>
-                    <h2 className={styles.domanda}>Completa la seguente parola:</h2>
+                    <h2 className={styles.domanda}>Completa con una lettera la seguente parola:</h2>
                     <div className={styles.wrapper_horizontal_flex}>
                         {parolaDaMostrare.map((lettera) => (
                             lettera.indice === -1
@@ -183,7 +183,7 @@ function GuessTheWord(props){
                             <input autoFocus className={styles.prova_rettangoli_lettera_mancante} type="text" maxLength="1" value={letteraInseritaDaUtente} onChange={letteraInseritaHandler}></input>
                         ))}
                     </div>
-                    <Badge bg="primary" className={styles.suggerimento_style}>Aiuto: {questions[counter_question_number].suggerimento}</Badge>
+                    <p bg="primary" className={styles.suggerimento_style}>Suggerimento: {questions[counter_question_number].suggerimento}</p>
 
                     <div className={styles.wrapper_horizontal_flex}>
                         <p className={styles.risposte_corrette}>Risposte corrette: {counter_correct_answers}/{questions.length}</p>

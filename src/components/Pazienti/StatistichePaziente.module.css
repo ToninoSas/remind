@@ -208,6 +208,38 @@ main_stats_layout {
     letter-spacing: 0.5px;
 }
 
+.filter_header_group {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.filter_item {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.filter_label {
+    font-size: 12px;
+    font-weight: 800;
+    color: #163172;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+/* Modifica al layout principale per renderlo responsive */
+@media (max-width: 768px) {
+    .filter_header_group {
+        flex-direction: column;
+    }
+}
+
 /* Adattamento per Tablet e Smartphone */
 @media (max-width: 900px) {
     .main_stats_layout {

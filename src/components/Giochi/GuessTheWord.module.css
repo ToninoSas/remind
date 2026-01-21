@@ -28,12 +28,17 @@
 }
 
 .domanda{
-    font-size: 25px;
+    font-size: 35px;
+    font-weight: bold;
     margin: 10px;
 }
 
 .suggerimento_style{
-    font-size: 15px;
+    font-size: 25px;
+    background-color: #163172;
+    color: white;
+    border-radius: 15px;
+    padding: 10px;
 }
 
 .risposte_corrette{

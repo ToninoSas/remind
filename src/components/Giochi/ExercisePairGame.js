@@ -10,7 +10,7 @@ import questionMark from "../Images-Giochi/question-sign.png";
 import GenericAlternativeButton from "../UI/GenericAlternativeButton";
 
 function ExercisePairGame(props){
-    let secondi = 5;
+    let secondi = 15;
     let interval;
 
     const [gameStarted, setGameStarted] = useState(false);
@@ -182,7 +182,7 @@ function ExercisePairGame(props){
                 <div className={styles.wrapper_gioco}>
                     {timer > 0 &&
                     <>
-                        <p className={styles.domanda}>Memorizza le carte!</p>
+                        <p className={styles.domanda}>Guarda bene queste carte e cerca di ricordare dove si trovano le coppie di carte uguali</p>
                         <p className={styles.domanda}>{timer}</p>
                     </> 
                     }
